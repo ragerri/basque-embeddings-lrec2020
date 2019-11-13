@@ -1,0 +1,116 @@
+\documentclass[10pt, a4paper]{article}
+\usepackage{lrec}
+%\usepackage{multibib}
+%\newcites{languageresource}{Language Resources}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{soul}
+\usepackage{todonotes}
+% for eps graphics
+
+\usepackage{epstopdf}
+\usepackage[utf8]{inputenc}
+
+\usepackage{hyperref}
+\usepackage{xstring}
+
+\newcommand{\secref}[1]{\StrSubstitute{\getrefnumber{#1}}{.}{ }}
+
+% google doc: https://docs.google.com/document/d/1czT8UndVGbKUfSRZtaHVyWbpFcGSV33USwytefEv4jM/edit?usp=sharing
+
+
+\title{Build-your-own is better than public text representation models: evidence for Basque}
+
+\name{Author1, Author2, Author3}
+
+\address{Affiliation1, Affiliation2, Affiliation3 \\
+         Address1, Address2, Address3 \\
+         author1@xxx.yy, author2@zzz.edu, author3@hhh.com\\
+         \{author1, author5, author9\}@abc.org\\}
+
+
+\abstract{
+% Ondorio nagusiak: 
+% Euskararako bert propioa > mbert publikoa eta euskararako fastext propioa > fastext publikoa eta flair propioa > flair publikoa
+% Atazak: topic class / polarity / ner / pos
+% Artearen egoera ataza guztietan (konprobatu bakoitzak berea)
+% Euskaraz: bert > flair > fastext (ñabardurekin idatzi)
+% Embedding-ak eta ereduak banatuko ditugu
+% Honek ñabardura gehitzen dio alemanari (japonesa?) buruzko lanari (jon ander)
+\\ \newline \Keywords{keyword1, keyword2,
+keyword3} }
+
+\begin{document}
+
+\maketitleabstract
+
+\section{Introduction}
+\label{sec:introduction}
+
+
+\section{Related work}
+\label{sec:related-work}
+
+% embedding / bert / mbert
+
+\section{Building Basque models}
+\label{sec:build-basq-models}
+
+% - Collecting corpora: iñaki/xabier/jon ander
+\subsection{Collecting corpora}
+\label{sec:build-basq-models:corpora}
+ 
+ News Articles from Basque media: Tokikom, Argia, Berria, 
+ Wikipedia (2019\_10\_01 dump)
+ Armiarma
+ \todo{IXA corpora - Jon Ander}
+ 
+ -Table corpus statistics
+ 
+% - fastext iñaki/xabier
+\subsection{Static embeddings: FastText}
+\label{sec:build-basq-models:static}
+
+Existing static word embeddings for basque: official Fasttext distributed: wiki (skipgram,d300,mf5,char3\_6,w5,e5,negs5) and cc-wiki (cbow,char\_5-5,w5,e5,negs10)
+Ours: default original paper (ref. needed) -  (cbow,d300,mf5,char3\_6,w5,e5,negs5)
+Ablation tests?
+
+Mention to word2vec?
+
+
+% - Flair rodri
+\subsection{Contextual embeddings: Flair}
+\label{sec:build-basq-models:flair}
+
+
+
+
+% - Bert ander/jon ander
+\subsection{Bert language models}
+\label{sec:build-basq-models:bert}
+
+
+\section{Experimental settings}
+\label{sec:exper-sett}
+
+% - Datasets iñaki/xabier/rodri
+% - Text classification models iñaki/xabier
+% - Sequence labeling models iñaki/rodri/jon ander
+
+\section{Results and discussion}
+\label{sec:results-discussion}
+
+% - Topic classification xabier
+% - Polarity iñaki
+% - PoS tagging rodri/iñaki
+% - NERC rodri
+% - discussion
+
+\section{Conclusions and future work}
+\label{sec:concl-future-work}
+
+
+\bibliographystyle{lrec}
+\bibliography{main}
+
+\end{document}
