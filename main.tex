@@ -19,7 +19,7 @@
 % google doc: https://docs.google.com/document/d/1czT8UndVGbKUfSRZtaHVyWbpFcGSV33USwytefEv4jM/edit?usp=sharing
 
 
-\title{Build-your-own is better than public text representation models: evidence for Basque Language}
+\title{Build-your-own is better than public text representation models: evidence for the Basque Language}
 
 \name{Author1, Author2, Author3}
 
@@ -30,39 +30,34 @@
 
 
 \abstract{
-% Ondorio nagusiak: 
+% Ondorio nagusiak:
 % Euskararako bert propioa > mbert publikoa eta euskararako fastext propioa > fastext publikoa eta flair propioa > flair publikoa
 % Atazak: topic class / polarity / ner / pos
 % Artearen egoera ataza guztietan (konprobatu bakoitzak berea)
 % Euskaraz: bert > flair > fastext (ñabardurekin idatzi)
 % Embedding-ak eta ereduak banatuko ditugu
-% Honek ñabardura gehitzen dio alemanari (japonesa?) buruzko lanari (jon ander)
-\\ \newline \Keywords{keyword1, keyword2,
-keyword3} }
+% Honek ñabardura gehitzen dio alemanari (japonesa?) buruzko lanari (jon ander) \\ \newline \Keywords{keyword1, keyword2, keyword3}
+}
 
 \begin{document}
 
 \maketitleabstract
 
-\section{Introduction}
-\label{sec:introduction}
+\section{Introduction}\label{sec:introduction}
 
 \todo[inline]{abstract/intro enekok}
 
 
-\section{Related work}
-\label{sec:related-work}
+\section{Related work}\label{sec:related-work}
 
 % embedding / bert / mbert
 \todo[inline]{related work aitor hasi. camembert aipatu?}
 
 
-\section{Building Basque models}
-\label{sec:build-basq-models}
+\section{Building Basque models}\label{sec:build-basq-models}
 
 % - Collecting corpora: iñaki
-\subsection{Collecting corpora}
-\label{sec:build-basq-models:corpora}
+\subsection{Collecting Corpora}\label{sec:build-basq-models:corpora}
  
  We collected a corpus comprising the Basque Wikipedia\footnote{The dump from 2019/10/01 was used.}, and news articles crawled from Basque media. In total it contains 226 million tokens, with 35 millions coming from Wikipedia. We will refer to this corpus as Basque Media Corpus (BMC).
  
@@ -71,10 +66,9 @@ keyword3} }
 
  
 % - fastext iñaki/xabier
-\subsection{Static embeddings: FastText}
-\label{sec:build-basq-models:static}
+\subsection{Static Embeddings: FastText}\label{sec:build-basq-models:static}
 
-To the best of our knowledge, the only publicly available static word embeddings for basque are those distributed by Facebook computed from two sources by using The FastText algorithm \cite{}: 
+To the best of our knowledge, the only publicly available static word embeddings for basque are those distributed by Facebook computed from two sources by using The FastText algorithm \cite{}:
 \begin{itemize}
     \item Wikipedia (wiki-ft) based embeddings \cite{fasttext1_bojanowski2017enriching} (skipgram,d300,mf5,char3\_6,w5,e5,negs5)
     \item Common Crawl and Wikipedia based embeddings (cc-ft) \cite{fasttext2_grave2018learning}
@@ -86,15 +80,20 @@ Mention to word2vec?
 
 
 % - Flair rodri
-\subsection{Contextual embeddings: Flair}
-\label{sec:build-basq-models:flair}
+\subsection{Character-based Contextual Embeddings}\label{sec:build-basq-models:flair}
 
-\cite{akbik2018coling}
+Static word embeddings such as FastText \cite{fasttext1_bojanowski2017enriching} provide a unique vector-based representation for a given word independently of the context in which the word occurs. Thus, if we consider the Basque word \emph{banku}\footnote{English: bank.}, static word embedding approaches will calculate one vector irrespective of the fact that the same word \emph{banku} may convey in some contexts different senses, namely, ``financial institution'',``bench'', ``supply or stock'', among others. This problem has been recently addressed by the so-called contextual word embeddings with the objective of being able to generate different word representations according to the context in which the word appears. Example of such contextual representations are ELMO \cite{Peters:2018} and Flair \cite{akbik2018coling}.
+
+Flair refers to both a deep learning toolkit and to a specific type of character-based contextual word embeddings. Flair (embeddings and system) have been successfully applied to sequence labeling tasks obtaining state-of-the-art results for a number of English Named Entity Recognition (NER) and Part-of-Speech tagging benchmarks \cite{akbik2018coling}, outperforming other well-known approaches such as BERT and ELMO \cite{devlin2018bert,Peters:2018}. In any case, Flair is of interest to us because they distribute their own Basque pre-trained embedding models obtained from a corpus of 249M words.
+
+In the Flair approach, words are modeled as sequences of characters that are passed to a character-based language model in order to generate word representations. More specifically, they use two LSTM models (backwa)
+
+
+For best results, the Flair authors recommend to combine their own Flair embeddings with additional static embeddings such as FastText. Thus, we follow their advice and use their system leveraging the pre-trained word embedding and meta-embedding models combined with the Flair character-based contextual embeddings for English and Spanish.
 
 
 % - Bert ander/jon ander
-\subsection{BERT language models}
-\label{sec:build-basq-models:bert}
+\subsection{BERT language models}\label{sec:build-basq-models:bert}
 
 
 
@@ -120,8 +119,7 @@ SentencePiece azaldu,  gure vocab size 50K
 Optimization aipatu, Cloud v2 TPUs for 128 length, v3 for 512 length - 90pstep 128length 10pstep 512 length - total 100000 step 3 egun
 
 
-\section{Experimental settings}
-\label{sec:exper-sett}
+\section{Experimental settings}\label{sec:exper-sett}
 
 % - Datasets iñaki/xabier/rodri
 We conduct an extensive evaluation on four well known NLP tasks: Topic Classification, Sentiment Classification, POS tagging, and Named Entity Recognition (NER). POS tagging and NER are evaluated on two establish benchmarks, i.e., Universal Dependencies and EIEC corpus. 
@@ -132,8 +130,7 @@ For polarity and topic classification we introduce two new datasets for Basque. 
 % - Text classification models iñaki/xabier
 % - Sequence labeling models iñaki/rodri/jon ander
 
-\section{Results and discussion}
-\label{sec:results-discussion}
+\section{Results and discussion}\label{sec:results-discussion}
 
 nomenclatura: \begin{itemize}
     \item fastext-official-wikipedia 
@@ -152,6 +149,17 @@ nomenclatura: \begin{itemize}
 % - Polarity iñaki
 % - PoS tagging rodri/iñaki
 % - NERC rodri
+
+\subsection{POS Tagging}\label{sec:pos-tagging}
+
+In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. We train the Flair off-the-shelf using the parameters used in Akbik et al. \cite{akbik2018coling}, tuning the system on the development data and using the test only for the final evaluation. Table shows first the results obtained by training the system with the Flair character-based contextual embeddings only. After that we combine the Flair embeddings with FastTex embeddings (both official and BMC).
+
+Furthermore, our best results establish new state-of-the-art performance for POS tagging using UD 1.2 for Basque.
+
+
+\subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
+
+
 
 \begin{table*}[!t]\scriptsize
 \centering
@@ -180,8 +188,7 @@ BERT-BMC  & & & &  \\
 \todo[inline]{discussion over summary table}
 % - discussion
 
-\section{Conclusions and future work}
-\label{sec:concl-future-work}
+\section{Conclusions and future work}\label{sec:concl-future-work}
 
 
 \bibliographystyle{lrec}
