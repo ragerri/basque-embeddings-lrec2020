@@ -101,11 +101,13 @@ Sarreratxoa ataleko kontu nagusiak azalduz.
 
 \paragraph{Model Architecture}
 
-In the same way as the original BERT architecture proposed by \newcite{devlin2018bert} our model is composed by stacked layers of Transformer encoders \cite{vaswani2017attention}. Our approach follows the BERT\textsubscript{BASE} configuration containing 12 Transformer encoder layers, a hidden size of 768 and 12 self-attention heads for a total of 110M parameters. 
+In the same way as the original BERT architecture proposed by \newcite{devlin2019bert} our model is composed by stacked layers of Transformer encoders \cite{vaswani2017attention}. Our approach follows the BERT\textsubscript{BASE} configuration containing 12 Transformer encoder layers, a hidden size of 768 and 12 self-attention heads for a total of 110M parameters. 
 
 Gainetik - BERT base erabiltzen dugula esan - transformer encoderra ezabili.
 
 \paragraph{Pretraining objective}
+
+Following BERT original implementation, we train our model on the Masked Language Model (MLM) and Next Sentence Prediction (NSP) tasks. Even if the necessity of the NSP task has been questioned by some recent works \cite{yang2019xlnet,liu2019roberta,lample2019cross} we have decided to keep it matching the original model. For the MLM, given an input sequence composed of N tokens $x_1, x_2, ..., x_n$ we select a $\%15$ of the input for possible masking. Then, from this 
 
 MaskedLM and NSP azaldu//Whole work masking - Arazoa NSP ez da erabiltzen azken modeloetan RoBERTA, XLM...
 
