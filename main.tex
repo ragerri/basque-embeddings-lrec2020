@@ -91,7 +91,9 @@ Flair refers to both a deep learning system and to a specific type of character-
 
 Flair's embeddings model words as sequences of characters. Moreover, the vector-based representation of a word will depend on its surrounding context. More specifically, to generate word embeddings they feed sentences as sequences of characters into a character-level Long short-term memory (LSTM) model which at each point in the sequence is trained to predict the next character. Given a sentence, a forward LSTM language model processes the sequence from the beginning of the sentence to the last character of the word we are modeling extracting its output hidden state. A backward LSTM performs the same operation going from the end of the sentence up to the first character of the word. In this case, the extracted hidden state contains information propagated from the end of the sentence to this point. Both hidden states are concatenated to generate the final embedding.
 
-The final word embeddings are passed into the BiLSTM-CRF sequence labeling architecture (Flair system) proposed by \cite{huang2015bidirectional}. Although for best results they recommend to stack their own Flair embeddings with additional static embeddings such as FastText, we will perform our evaluation in order to compare the official Flair embeddings for Basque with our own Flair-BMC embeddings.
+POOLED EMBEDDINGS HERE
+
+The final word embeddings are passed into the BiLSTM-CRF sequence labeling architecture (Flair system) proposed by \cite{huang2015bidirectional}. Although for best results they recommend to stack their own Flair embeddings with additional static embeddings such as FastText, we will perform our evaluation with the aim of comparing the official Flair embeddings for Basque with our own Flair-BMC embeddings.
 
 % - Bert ander/jon ander
 \subsection{BERT language models}\label{sec:build-basq-models:bert}
@@ -128,7 +130,7 @@ As the attentions is quadratic to the sequence length, making longer sequences m
 
 We conduct an extensive evaluation on four well known NLP tasks: Topic Classification, Sentiment Classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER). POS tagging and NER are evaluated on two establish benchmarks, i.e., Universal Dependencies 1.2 and the EIEC corpus.
 
-For polarity and topic classification we introduce two new datasets for Basque. For sentiment classification a corpus of tweets containing messages related to the cultural domain was used \cite{san2019multilingual}\footnote{The dataset is publicly available at https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}. The corpus contains three class annotations (positive, negative and neutral). For the task of topic classification a dataset containing 12k news short texts was compiled. Each text is tagged as belonging to a single topic in a 12 class scheme
+For polarity and topic classification we introduce two new datasets for Basque. For sentiment classification a corpus of tweets containing messages related to the cultural domain was used \cite{san2019multilingual}\footnote{The dataset is publicly available at \url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}. The corpus contains three class annotations (positive, negative and neutral). For the task of topic classification a dataset containing 12k news short texts was compiled. Each text is tagged as belonging to a single topic in a 12 class scheme
 
 
 % - Text classification models iñaki/xabier
@@ -244,7 +246,7 @@ Furthermore, our best results establish new state-of-the-art performance for POS
 
 \subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
 
-The only gold standard corpus for NER in Basque is EIEC\footnote{\url{http://ixa2.si.ehu.eus/eiec/eiec_v1.0.tgz}} \cite{alegria2006lessons}. The corpus contains 44K tokens for training (3817 unique entities) and 15K for testing (931 entities). Although EIEC is annotated with four entity types (Location, Person, Organization and Miscellaneous), the \emph{Miscellaneous} class is extremely sparse, occurring only in a proportion of 1 to 10 with respect to the other three classes. Thus, in the training data there are 156 entities annotated as \emph{Miscellaneous} whereas each of the other three classes contain around 1200 entities.
+The only gold standard corpus for NER in Basque is EIEC\footnote{\url{http://ixa2.si.ehu.eus/eiec/eiec_v1.0.tgz}} \cite{alegria2006lessons}. The corpus contains 44K tokens for training (3817 unique entities) and 15K for testing (931 entities). Although EIEC is annotated with four entity types (Location, Person, Organization and Miscellaneous), the \emph{Miscellaneous} class is rather sparse, occurring only in a proportion of 1 to 10 with respect to the other three classes. Thus, in the training data there are 156 entities annotated as \emph{Miscellaneous} whereas for each of the other three classes it contains around 1200 entities.
 
 \begin{table}[!t]\footnotesize
 \centering
