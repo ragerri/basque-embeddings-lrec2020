@@ -91,7 +91,7 @@ Flair refers to both a deep learning system and to a specific type of character-
 
 Flair's embeddings model words as sequences of characters. Moreover, the vector-based representation of a word will depend on its surrounding context. More specifically, to generate word embeddings they feed sentences as sequences of characters into a character-level Long short-term memory (LSTM) model which at each point in the sequence is trained to predict the next character. Given a sentence, a forward LSTM language model processes the sequence from the beginning of the sentence to the last character of the word we are modeling extracting its output hidden state. A backward LSTM performs the same operation going from the end of the sentence up to the first character of the word. In this case, the extracted hidden state contains information propagated from the end of the sentence to this point. Both hidden states are concatenated to generate the final embedding.
 
-The final word embeddings are passed into the BiLSTM-CRF sequence labeling architecture (Flair system) proposed by \cite{huang2015bidirectional}. For best results, they recommend to stack their own Flair embeddings with additional static embeddings such as FastText. The intuition is that static word embedings would help to add greater latent word-level semantics to the Flair embeddings. Thus, when experimenting with Flair in Section \ref{sec:results-discussion}, we will compare the official Flair embeddings for Basque with our own Flair-BMC embeddings and their combinations with the available FastText embeddings, namely, the official embeddings distributed by FastText and the FastText-BMC we trained as described in Section \ref{sec:build-basq-models:static}.
+The final word embeddings are passed into the BiLSTM-CRF sequence labeling architecture (Flair system) proposed by \cite{huang2015bidirectional}. Although for best results they recommend to stack their own Flair embeddings with additional static embeddings such as FastText, we will perform our evaluation in order to compare the official Flair embeddings for Basque with our own Flair-BMC embeddings.
 
 % - Bert ander/jon ander
 \subsection{BERT language models}\label{sec:build-basq-models:bert}
@@ -123,7 +123,10 @@ As the attentions is quadratic to the sequence length, making longer sequences m
 \section{Experimental settings}\label{sec:exper-sett}
 
 % - Datasets iñaki/xabier/rodri
-We conduct an extensive evaluation on four well known NLP tasks: Topic Classification, Sentiment Classification, POS tagging, and Named Entity Recognition (NER). POS tagging and NER are evaluated on two establish benchmarks, i.e., Universal Dependencies and EIEC corpus. 
+
+\todo[inline]{Rodri: Nik atal hau kenduko nuke eta jarriko nituzke hemengo edukiak dagokien azpi-ataletan esperimentu/emaitzekin}
+
+We conduct an extensive evaluation on four well known NLP tasks: Topic Classification, Sentiment Classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER). POS tagging and NER are evaluated on two establish benchmarks, i.e., Universal Dependencies 1.2 and the EIEC corpus.
 
 For polarity and topic classification we introduce two new datasets for Basque. For sentiment classification a corpus of tweets containing messages related to the cultural domain was used \cite{san2019multilingual}\footnote{The dataset is publicly available at https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}. The corpus contains three class annotations (positive, negative and neutral). For the task of topic classification a dataset containing 12k news short texts was compiled. Each text is tagged as belonging to a single topic in a 12 class scheme
 
@@ -134,8 +137,8 @@ For polarity and topic classification we introduce two new datasets for Basque. 
 \section{Results and discussion}\label{sec:results-discussion}
 
 nomenclatura: \begin{itemize}
-    \item fastext-official-wikipedia 
-    \item fastext-official-common-crawl 
+    \item fastext-official-wikipedia
+    \item fastext-official-common-crawl
     \item fastext-BMC
     \item flair-official
     \item flair-BMC
@@ -152,7 +155,7 @@ nomenclatura: \begin{itemize}
 \begin{table}[!t]\scriptsize
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
-\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline 
+%\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
  {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
 \multicolumn{3}{@{}l}{\textit{\scriptsize{Static Embeddings}}} \\
 fastext-wikipedia &  &	 \\
@@ -171,7 +174,7 @@ BERT-BMC  & \textbf{76.77}	& \textbf{63.46}  \\
 %\hline
 %- & - & -\\
 \end{tabular}
-\caption{Results for the topic classification task}\label{sec:results-discussion:table}
+\caption{Results for the topic classification task}\label{tab:topic}
 \end{table}
 
 % - Polarity iñaki
@@ -180,7 +183,7 @@ BERT-BMC  & \textbf{76.77}	& \textbf{63.46}  \\
 \begin{table}[!t]\scriptsize
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
-\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline 
+%\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline 
  {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
 \multicolumn{3}{@{}l}{\textit{\scriptsize{Static Embeddings}}} \\
 fastext-wikipedia & 71.10 &	66.72 \\
@@ -199,7 +202,7 @@ BERT-BMC  & \textbf{78.10}	& \textbf{76.14}  \\
 \hline
 SVM \cite{san2019multilingual} & 74.02 & 69.87\\
 \end{tabular}
-\caption{Results for the sentiment classification task}\label{sec:results-discussion:table}
+\caption{Results for the sentiment classification task}\label{tab:sentiment}
 \end{table}
 \todo[inline]{Behin behinekoa da taula, zalantza dugu xehetasun gehiago jarri (klase bakoitzeko f1 scoreak adib). Komeni da adostea denok? Edo taula hauetan bakoitzak bere egitura jarraitzea hobe da ataza bakoitzean nabarmentzeko gauzak ezberdinak izan daitezkeelako?}
 
@@ -212,19 +215,65 @@ SVM \cite{san2019multilingual} & 74.02 & 69.87\\
 
 In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. The Basque UD treebank \cite{aranzabe2015automatic} is based on a conversion from part of the Basque Dependency Treebank (BDT) \cite{aduriz2003construction}. The treebank consists of 5274 sentences (60563 tokens) and covers mainly literary and journalistic texts.
 
+\begin{table}[!t]\footnotesize
+\centering
+\begin{tabular}{@{\hspace{0.3cm}}lccc} \hline
+ \textbf{} & \textbf{Word Accuracy} \\ \hline
+\textbf{Static Embeddings} & \\
+FastText-Wikipedia &  \\
+FastText-Common-Crawl & \\
+FastText-BMC  & \\ \hline
+\textbf{FlairEmbeddings}\\
+Flair-official &  \\
+Flair-BMC  &  \\ \hline
+\textbf{BERT Language Models}\\
+mBERT-official  &  \\
+BERT-BMC  & \\ \hline
+\textbf{Baseline} \\
+\cite{plank-etal-2016-multilingual} & 95.51 \\ \hline
+\end{tabular}
+\caption{Basque POS tagging results on UD 1.2.}\label{tab:pos}
+\end{table}
+
+We train Flair using the parameters specified in \cite{akbik2019naacl}, tuning the system on the development data and using the test only for the final evaluation.
+Table shows first the results obtained by training the system with the Flair character-based contextual embeddings only. After that we combine the Flair embeddings with FastTex embeddings (both official and BMC).
 
 
-We train Flair using the parameters specified in \cite{akbik2019naacl}, tuning the system on the development data and using the test only for the final evaluation. Table shows first the results obtained by training the system with the Flair character-based contextual embeddings only. After that we combine the Flair embeddings with FastTex embeddings (both official and BMC).
 Furthermore, our best results establish new state-of-the-art performance for POS tagging using UD 1.2 for Basque.
 
 
 \subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
 
+The only gold standard corpus for NER in Basque is EIEC\footnote{\url{http://ixa2.si.ehu.eus/eiec/eiec_v1.0.tgz}} \cite{alegria2006lessons}. The corpus contains 44K tokens for training (3817 unique entities) and 15K for testing (931 entities). Although EIEC is annotated with four entity types (Location, Person, Organization and Miscellaneous), the \emph{Miscellaneous} class is extremely sparse, occurring only in a proportion of 1 to 10 with respect to the other three classes. Thus, in the training data there are 156 entities annotated as \emph{Miscellaneous} whereas each of the other three classes contain around 1200 entities.
+
+\begin{table}[!t]\footnotesize
+\centering
+\begin{tabular}{@{\hspace{0.3cm}}lccc} \hline
+ \textbf{} &\textbf{Precision} & \textbf{Recall} & \textbf{F1} \\ \hline
+\textbf{Static Embeddings} & & &  \\
+FastText-Wikipedia & & & \\
+FastText-Common-Crawl &  & &  \\
+FastText-BMC  &  & &  \\
+\hline%\hline
+\textbf{Flair embeddings}\\
+Flair-official &  &  &   \\
+Flair-BMC & & &  \\ \hline
+\textbf{BERT Language Models} \\
+mBERT-official  &  & &   \\
+BERT-BMC  &  & &   \\ \hline
+\textbf{Baseline} \\
+\cite{agerri2016robust} & 80.66 & 73.14 & 76.72 \\ \hline
+\end{tabular}
+\caption{Basque NER results on EIEC corpus.}\label{tab:ner}
+\end{table}
+
+
+\section{Discussion}\label{sec:discussion}
 
 \begin{table*}[!t]\scriptsize
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lcccc} \hline
-\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline 
+\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
  & {\textbf{Topic Classification}} & {\textbf{Polarity}} &  {\textbf{POS}} & {\textbf{NER}}\\ \hline
 \multicolumn{5}{@{}l}{\textit{\scriptsize{Static Embeddings}}} \\
 fastext-wikipedia & & & & \\
@@ -237,8 +286,7 @@ Flair-BMC  & & & &  \\
 %\hline
 %\multicolumn{5}{@{}l}{\scriptsize{\textit{BERT Embeddings}}}\\
 mBERT-official  & & & &  \\
-BERT-BMC  & & & &  \\
-\hline 
+BERT-BMC  & & & &  \\ \hline
 \multicolumn{5}{@{}l}{\scriptsize{\textit{Previous state-of-the-art}}} \\
 \hline
 \end{tabular}
@@ -248,6 +296,8 @@ BERT-BMC  & & & &  \\
 \todo[inline]{discussion over summary table}
 % - discussion
 
+
+
 \section{Conclusions and future work}\label{sec:concl-future-work}
 
 \section*{Acknowledgments}
@@ -255,6 +305,7 @@ BERT-BMC  & & & &  \\
 This work has been funded by the~Spanish Ministry of Science, Innovation and Universities under the project DeepReading (RTI2018-096846-B-C21) (MCIU/AEI/FEDER, UE) and by the BBVA Big Data 2018 ``BigKnowledge for Text Mining (BigKnowledge)'' project.
 %The XX author is funded by the Ramon y Cajal Fellowship RYC-2017-23647. We also acknowledge the~support of the NVIDIA Corporation with the~donation of a Titan V GPU used for this research.
 
+\section{Bibliographical References}
 
 \bibliographystyle{lrec}
 \bibliography{main}
