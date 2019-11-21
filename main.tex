@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{tabularx}
 \usepackage{soul}
+\usepackage{amsmath}
 \usepackage{todonotes}
 % for eps graphics
 
@@ -94,31 +95,29 @@ The final word embeddings are passed into the BiLSTM-CRF sequence labeling archi
 % - Bert ander/jon ander
 \subsection{BERT language models}\label{sec:build-basq-models:bert}
 
+We have trained a BERT \cite{devlin2019bert} model for Basque Language using the BMC corpus motivated by the low representation this language has in the original multilingual BERT model. In this section we describe the methods used for creating the vocabulary, the model architecture, the pre-training objective and the procedure.
 
+The main differences between our model and the original implementation are the corpus used for the pre-training, the algorithm for sub-word vocabulary creation and the usage of a different masking strategy that is not available for BERT\textsubscript{BASE} model. 
 
-Sarreratxoa ataleko kontu nagusiak azalduz. 
+\paragraph{Sub-word vocabulary}
+
+We create a cased sub-word vocabulary containing 50,000 tokens using the unigram language model based subword segmentation algorithm proposed by \newcite{kudo2018subword}. We do not use the same algorithm as BERT because the WordPiece \cite{wu2016google} implementation they originally used is not publicly available. We have increased the vocabulary size from 30,000 sub-word units up to 50,000 expecting to be beneficial for the Basque language due to its agglutinative nature. Our vocabulary is learned from the whole training corpus but we do not cover all the characters in order to avoid very rare ones. We set the coverage percentage to 0.9995. 
 
 \paragraph{Model Architecture}
 
 In the same way as the original BERT architecture proposed by \newcite{devlin2019bert} our model is composed by stacked layers of Transformer encoders \cite{vaswani2017attention}. Our approach follows the BERT\textsubscript{BASE} configuration containing 12 Transformer encoder layers, a hidden size of 768 and 12 self-attention heads for a total of 110M parameters. 
 
-Gainetik - BERT base erabiltzen dugula esan - transformer encoderra ezabili.
+\paragraph{Pre-training objective}
 
-\paragraph{Pretraining objective}
+Following BERT original implementation, we train our model on the Masked Language Model (MLM) and Next Sentence Prediction (NSP) tasks. Even if the necessity of the NSP task has been questioned by some recent works \cite{yang2019xlnet,liu2019roberta,lample2019cross} we have decided to keep it as in the original paper. For the MLM, given an input sequence composed of N tokens $x_1, x_2, ..., x_n$ we select a $15\%$ of them as masking candidates. Then, from this selected tokens a $80\%$ are masked by replacing them with the [MASK] token, a $10\%$ are replaced with a random word of the vocabulary and the remaining $10\%$ are left unchanged. In order to create input examples for the NSP task, we take two segments $A$ and $B$ from the training corpus, where $B$ is the true next segment for $A$ only in a $50\%$ of the cases, in the rest of the cases, $B$ is just a random segment from the corpus. At the end, the model is trained to optimize the sum of the means of the MLM and NSP likelihoods.
 
-Following BERT original implementation, we train our model on the Masked Language Model (MLM) and Next Sentence Prediction (NSP) tasks. Even if the necessity of the NSP task has been questioned by some recent works \cite{yang2019xlnet,liu2019roberta,lample2019cross} we have decided to keep it as in the original paper. For the MLM, given an input sequence composed of N tokens $x_1, x_2, ..., x_n$ we select a $15\%$ of them as masking candidates. Then, from this selected tokens a $80\%$ are masked by replacing them with the [MASK] token, a $10\%$ are replaced with a random word of the vocabulary and the remaining $10\%$ are left unchanged. 
+As our vocabulary consists of sub-word units, we use whole-word masking (WWM), that applies the masking before the sub-word tokenization. This new masking strategy makes the MLM task more difficult for the system as it has to predict the whole word instead of predicting just part of it. An upgraded version of BERT\footnote{\url{https://github.com/google-research/bert}} has proven that WWM has substantial benefits in comparison with previous masking that was done after the sub-word tokenization. 
 
-MaskedLM and NSP azaldu//Whole work masking - Arazoa NSP ez da erabiltzen azken modeloetan RoBERTA, XLM...
+\paragraph{Pre-training procedure}
 
+Similar to \cite{devlin2019bert} we use Adam with learning rate of $1e-4$, $\beta_1=0.9$, $\beta_2=0.999$, L2 weight decay of $0.01$, learning rate warmup over the first $10,0000$ steps, and linear decay of the learning rate. The dropout probability is fixed to $0.1$ on all the layers. 
 
-\paragraph{Vocabulary}
-
-SentencePiece azaldu,  gure vocab size 50K
-
-\paragraph{Pretraining procedure}
-
-Optimization aipatu, Cloud v2 TPUs for 128 length, v3 for 512 length - 90pstep 128length 10pstep 512 length - total 100000 step 3 egun
-
+As the attentions is quadratic to the sequence length, making longer sequences much more expensive, we pre-train the model with sequence length of $128$ for $90\%$ of the steps and sequence length of $512$ for $10\%$ of the steps. In total we train for $1,000,000$ steps and a batch size of $256$. The first $90\%$ steps are trained using Cloud v2 TPUs and for the rest of the steps we use Cloud v3 TPUs \footnote{\url{https://cloud.google.com/tpu/pricing}}. 
 
 \section{Experimental settings}\label{sec:exper-sett}
 
