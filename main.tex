@@ -87,7 +87,7 @@ Static word embeddings such as FastText \cite{fasttext1_bojanowski2017enriching}
 
 Flair refers to both a deep learning system and to a specific type of character-based contextual word embeddings. Flair (embeddings and system) have been successfully applied to sequence labeling tasks obtaining state-of-the-art results for a number of English Named Entity Recognition (NER) and Part-of-Speech tagging benchmarks \cite{akbik2018coling}, outperforming other well-known approaches such as BERT and ELMO \cite{devlin2019bert,Peters:2018}. In any case, Flair is of interest to us because they distribute their own Basque pre-trained embedding models obtained from a corpus of 36M tokens (combining OPUS and Wikipedia).
 
-We train our own Flair embeddings using the BMC corpus with the following parameters: Hidden size 2048, sequence length of 250, and a mini-batch size of 100. The rest of the parameters are left in their default setting. Training was done for 5 epochs over the full training corpus.
+\paragraph{Flair-BMC models:} We train our own Flair embeddings using the BMC corpus with the following parameters: Hidden size 2048, sequence length of 250, and a mini-batch size of 100. The rest of the parameters are left in their default setting. Training was done for 5 epochs over the full training corpus. The training of each model took 48h on a Nvidia Titan V GPU.
 
 Flair's embeddings model words as sequences of characters. Moreover, the vector-based representation of a word will depend on its surrounding context. More specifically, to generate word embeddings they feed sentences as sequences of characters into a character-level Long short-term memory (LSTM) model which at each point in the sequence is trained to predict the next character. Given a sentence, a forward LSTM language model processes the sequence from the beginning of the sentence to the last character of the word we are modeling extracting its output hidden state. A backward LSTM performs the same operation going from the end of the sentence up to the first character of the word. In this case, the extracted hidden state contains information propagated from the end of the sentence to this point. Both hidden states are concatenated to generate the final embedding.
 
@@ -153,8 +153,7 @@ nomenclatura: \begin{itemize}
 
 \subsection{POS Tagging}\label{sec:pos-tagging}
 
-In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. We train the Flair off-the-shelf using the parameters used in Akbik et al. \cite{akbik2018coling}, tuning the system on the development data and using the test only for the final evaluation. Table shows first the results obtained by training the system with the Flair character-based contextual embeddings only. After that we combine the Flair embeddings with FastTex embeddings (both official and BMC).
-
+In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. We train Flair using the parameters specified in \cite{akbik2019naacl}, tuning the system on the development data and using the test only for the final evaluation. Table shows first the results obtained by training the system with the Flair character-based contextual embeddings only. After that we combine the Flair embeddings with FastTex embeddings (both official and BMC).
 Furthermore, our best results establish new state-of-the-art performance for POS tagging using UD 1.2 for Basque.
 
 
@@ -190,6 +189,11 @@ BERT-BMC  & & & &  \\
 % - discussion
 
 \section{Conclusions and future work}\label{sec:concl-future-work}
+
+\section*{Acknowledgments}
+
+This work has been funded by the~Spanish Ministry of Science, Innovation and Universities under the project DeepReading (RTI2018-096846-B-C21) (MCIU/AEI/FEDER, UE) and by the BBVA Big Data 2018 ``BigKnowledge for Text Mining (BigKnowledge)'' project.
+%The XX author is funded by the Ramon y Cajal Fellowship RYC-2017-23647. We also acknowledge the~support of the NVIDIA Corporation with the~donation of a Titan V GPU used for this research.
 
 
 \bibliographystyle{lrec}
