@@ -210,12 +210,15 @@ SVM \cite{san2019multilingual} & 74.02 & 69.87\\
 
 \subsection{POS Tagging}\label{sec:pos-tagging}
 
-In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. We train Flair using the parameters specified in \cite{akbik2019naacl}, tuning the system on the development data and using the test only for the final evaluation. Table shows first the results obtained by training the system with the Flair character-based contextual embeddings only. After that we combine the Flair embeddings with FastTex embeddings (both official and BMC).
+In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. The Basque UD treebank \cite{aranzabe2015automatic} is based on a conversion from part of the Basque Dependency Treebank (BDT) \cite{aduriz2003construction}. The treebank consists of 5274 sentences (60563 tokens) and covers mainly literary and journalistic texts.
+
+
+
+We train Flair using the parameters specified in \cite{akbik2019naacl}, tuning the system on the development data and using the test only for the final evaluation. Table shows first the results obtained by training the system with the Flair character-based contextual embeddings only. After that we combine the Flair embeddings with FastTex embeddings (both official and BMC).
 Furthermore, our best results establish new state-of-the-art performance for POS tagging using UD 1.2 for Basque.
 
 
 \subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
-
 
 
 \begin{table*}[!t]\scriptsize
