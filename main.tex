@@ -96,13 +96,13 @@ The final word embeddings are passed into the BiLSTM-CRF sequence labeling archi
 % - Bert ander/jon ander
 \subsection{BERT language models}\label{sec:build-basq-models:bert}
 
-We have trained a BERT \cite{devlin2019bert} model for Basque Language using the BMC corpus motivated by the low representation this language has in the original multilingual BERT model. In this section we describe the methods used for creating the vocabulary, the model architecture, the pre-training objective and the procedure.
+We have trained a BERT \cite{devlin2019bert} model for Basque Language using the BMC corpus motivated by the low representation this language has in the original multilingual BERT model. In this section we describe the methods used for creating the vocabulary, the model architecture, the pre-training objective and procedure.
 
-The main differences between our model and the original implementation are the corpus used for the pre-training, the algorithm for sub-word vocabulary creation and the usage of a different masking strategy that is not available for BERT\textsubscript{BASE} model. 
+The main differences between our model and the original implementation are the corpus used for the pre-training, the algorithm for sub-word vocabulary creation and the usage of a different masking strategy that is not available for the BERT\textsubscript{BASE} model yet. 
 
 \paragraph{Sub-word vocabulary}
 
-We create a cased sub-word vocabulary containing 50,000 tokens using the unigram language model based subword segmentation algorithm proposed by \newcite{kudo2018subword}. We do not use the same algorithm as BERT because the WordPiece \cite{wu2016google} implementation they originally used is not publicly available. We have increased the vocabulary size from 30,000 sub-word units up to 50,000 expecting to be beneficial for the Basque language due to its agglutinative nature. Our vocabulary is learned from the whole training corpus but we do not cover all the characters in order to avoid very rare ones. We set the coverage percentage to 0.9995. 
+We create a cased sub-word vocabulary containing 50,000 tokens using the unigram language model based subword segmentation algorithm proposed by \newcite{kudo2018subword}. We do not use the same algorithm as BERT because the WordPiece \cite{wu2016google} implementation they originally used is not publicly available. We have increased the vocabulary size from 30,000 sub-word units up to 50,000 expecting to be beneficial for the Basque language due to its agglutinative nature. Our vocabulary is learned from the whole training corpus but we do not cover all the characters in order to avoid very rare ones. We set the coverage percentage to $99.95$. 
 
 \paragraph{Model Architecture}
 
@@ -112,7 +112,7 @@ In the same way as the original BERT architecture proposed by \newcite{devlin201
 
 Following BERT original implementation, we train our model on the Masked Language Model (MLM) and Next Sentence Prediction (NSP) tasks. Even if the necessity of the NSP task has been questioned by some recent works \cite{yang2019xlnet,liu2019roberta,lample2019cross} we have decided to keep it as in the original paper. For the MLM, given an input sequence composed of N tokens $x_1, x_2, ..., x_n$ we select a $15\%$ of them as masking candidates. Then, from this selected tokens a $80\%$ are masked by replacing them with the [MASK] token, a $10\%$ are replaced with a random word of the vocabulary and the remaining $10\%$ are left unchanged. In order to create input examples for the NSP task, we take two segments $A$ and $B$ from the training corpus, where $B$ is the true next segment for $A$ only in a $50\%$ of the cases, in the rest of the cases, $B$ is just a random segment from the corpus. At the end, the model is trained to optimize the sum of the means of the MLM and NSP likelihoods.
 
-As our vocabulary consists of sub-word units, we use whole-word masking (WWM), that applies the masking before the sub-word tokenization. This new masking strategy makes the MLM task more difficult for the system as it has to predict the whole word instead of predicting just part of it. An upgraded version of BERT\footnote{\url{https://github.com/google-research/bert}} has proven that WWM has substantial benefits in comparison with previous masking that was done after the sub-word tokenization. 
+As our vocabulary consists of sub-word units, we use whole-word masking (WWM), that applies the masking before the sub-word tokenization. This new masking strategy makes the MLM task more difficult for the system as it has to predict the whole word instead of predicting just part of it. An upgraded version of BERT\textsubscript{LARGE}\footnote{\url{https://github.com/google-research/bert}} has proven that WWM has substantial benefits in comparison with previous masking that was done after the sub-word tokenization. 
 
 \paragraph{Pre-training procedure}
 
@@ -147,7 +147,64 @@ nomenclatura: \begin{itemize}
 
 
 % - Topic classification xabier
+\subsection{Topic classification}\label{sec:topic}
+
+\begin{table}[!t]\scriptsize
+\centering
+\begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
+\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline 
+ {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
+\multicolumn{3}{@{}l}{\textit{\scriptsize{Static Embeddings}}} \\
+fastext-wikipedia &  &	 \\
+fastext-common-crawl &  &   \\
+fastext-BMC  &  &	 \\
+\hline%\hline
+\multicolumn{3}{@{}l}{\scriptsize{\textit{Contextual Embeddings}}}\\
+Flair-official &  &	 \\
+Flair-BMC  & 	&  \\
+%\hline
+%\multicolumn{5}{@{}l}{\scriptsize{\textit{BERT Embeddings}}}\\
+mBERT-official  & 68.42 & 48.38  \\
+BERT-BMC  & \textbf{76.77}	& \textbf{63.46}  \\
+\hline 
+%\multicolumn{3}{@{}l}{\scriptsize{\textit{Previous state-of-the-art}}} \\
+%\hline
+%- & - & -\\
+\end{tabular}
+\caption{Results for the topic classification task}\label{sec:results-discussion:table}
+\end{table}
+
 % - Polarity iñaki
+\subsection{Sentiment classification}\label{sec:polarity}
+
+\begin{table}[!t]\scriptsize
+\centering
+\begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
+\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline 
+ {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
+\multicolumn{3}{@{}l}{\textit{\scriptsize{Static Embeddings}}} \\
+fastext-wikipedia & 71.10 &	66.72 \\
+fastext-common-crawl & 66.16 & 58.89  \\
+fastext-BMC  & 72.19 &	68.14 \\
+\hline%\hline
+\multicolumn{3}{@{}l}{\scriptsize{\textit{Contextual Embeddings}}}\\
+Flair-official & 69.93 & 64.06 \\
+Flair-BMC  & 71.71	& 68.51 \\
+%\hline
+%\multicolumn{5}{@{}l}{\scriptsize{\textit{BERT Embeddings}}}\\
+mBERT-official  & 71.02 & 66.02 \\
+BERT-BMC  & \textbf{78.10}	& \textbf{76.14}  \\
+\hline 
+\multicolumn{3}{@{}l}{\scriptsize{\textit{Previous state-of-the-art}}} \\
+\hline
+SVM \cite{san2019multilingual} & 74.02 & 69.87\\
+\end{tabular}
+\caption{Results for the sentiment classification task}\label{sec:results-discussion:table}
+\end{table}
+\todo[inline]{Behin behinekoa da taula, zalantza dugu xehetasun gehiago jarri (klase bakoitzeko f1 scoreak adib). Komeni da adostea denok? Edo taula hauetan bakoitzak bere egitura jarraitzea hobe da ataza bakoitzean nabarmentzeko gauzak ezberdinak izan daitezkeelako?}
+
+
+
 % - PoS tagging rodri/iñaki
 % - NERC rodri
 
