@@ -159,20 +159,21 @@ nomenclatura: \begin{itemize}
 \begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
 %\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
  {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
-\multicolumn{3}{@{}l}{\textit{\scriptsize{Static Embeddings}}} \\
-fastext-wikipedia &  &	 \\
+\textbf{Static Embeddings} & & \\
+fastext-wikipedia & 65.00 &	54.99 \\
 fastext-common-crawl &  &   \\
 fastext-BMC  &  &	 \\
 \hline%\hline
-\multicolumn{3}{@{}l}{\scriptsize{\textit{Contextual Embeddings}}}\\
+\textbf{FlairEmbeddings}\\
 Flair-official &  &	 \\
 Flair-BMC  & 	&  \\
 %\hline
-%\multicolumn{5}{@{}l}{\scriptsize{\textit{BERT Embeddings}}}\\
+\textbf{BERT Language Models}\\
 mBERT-official  & 68.42 & 48.38  \\
 BERT-BMC  & \textbf{76.77}	& \textbf{63.46}  \\
 \hline 
-%\multicolumn{3}{@{}l}{\scriptsize{\textit{Previous state-of-the-art}}} \\
+\textbf{Baseline} \\
+
 %\hline
 %- & - & -\\
 \end{tabular}
@@ -187,20 +188,20 @@ BERT-BMC  & \textbf{76.77}	& \textbf{63.46}  \\
 \begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
 %\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline 
  {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
-\multicolumn{3}{@{}l}{\textit{\scriptsize{Static Embeddings}}} \\
+\textbf{Static Embeddings} & & \\
 fastext-wikipedia & 71.10 &	66.72 \\
 fastext-common-crawl & 66.16 & 58.89  \\
 fastext-BMC  & 72.19 &	68.14 \\
 \hline%\hline
-\multicolumn{3}{@{}l}{\scriptsize{\textit{Contextual Embeddings}}}\\
+\textbf{FlairEmbeddings}\\
 Flair-official & 69.93 & 64.06 \\
 Flair-BMC  & 71.71	& 68.51 \\
 %\hline
-%\multicolumn{5}{@{}l}{\scriptsize{\textit{BERT Embeddings}}}\\
+\textbf{BERT Language Models}\\
 mBERT-official  & 71.02 & 66.02 \\
 BERT-BMC  & \textbf{78.10}	& \textbf{76.14}  \\
 \hline 
-\multicolumn{3}{@{}l}{\scriptsize{\textit{Previous state-of-the-art}}} \\
+\multicolumn{3}{@{}l}{\scriptsize{\textb{Previous state-of-the-art}}} \\
 \hline
 SVM \cite{san2019multilingual} & 74.02 & 69.87\\
 \end{tabular}
