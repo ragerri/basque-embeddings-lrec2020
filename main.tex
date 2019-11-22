@@ -59,13 +59,13 @@
 
 % - Collecting corpora: iñaki
 \subsection{Collecting Corpora}\label{sec:build-basq-models:corpora}
- 
+
  We collected a corpus comprising the Basque Wikipedia\footnote{The dump from 2019/10/01 was used.}, and news articles crawled from Basque media. In total it contains 226 million tokens, with 35 millions coming from Wikipedia. We will refer to this corpus as Basque Media Corpus (BMC).
- 
+
  \todo[inline]{Justificatu zergatik ez common crawl. Aipatu iturriak. justifikatu zergatik ezin dugun publiko jarri}
 
 
- 
+
 % - fastext iñaki/xabier
 \subsection{Static Embeddings: FastText}\label{sec:build-basq-models:static}
 
@@ -89,11 +89,11 @@ Flair refers to both a deep learning system and to a specific type of character-
 
 \paragraph{Flair-BMC models:} We train our own Flair embeddings using the BMC corpus with the following parameters: Hidden size 2048, sequence length of 250, and a mini-batch size of 100. The rest of the parameters are left in their default setting. Training was done for 5 epochs over the full training corpus. The training of each model took 48h on a Nvidia Titan V GPU.
 
-Flair's embeddings model words as sequences of characters. Moreover, the vector-based representation of a word will depend on its surrounding context. More specifically, to generate word embeddings they feed sentences as sequences of characters into a character-level Long short-term memory (LSTM) model which at each point in the sequence is trained to predict the next character. Given a sentence, a forward LSTM language model processes the sequence from the beginning of the sentence to the last character of the word we are modeling extracting its output hidden state. A backward LSTM performs the same operation going from the end of the sentence up to the first character of the word. In this case, the extracted hidden state contains information propagated from the end of the sentence to this point. Both hidden states are concatenated to generate the final embedding.
+\paragraph{Flair Embeddings:} Flair's embeddings model words as sequences of characters. Moreover, the vector-based representation of a word will depend on its surrounding context. More specifically, to generate word embeddings they feed sentences as sequences of characters into a character-level Long short-term memory (LSTM) model which at each point in the sequence is trained to predict the next character. Given a sentence, a forward LSTM language model processes the sequence from the beginning of the sentence to the last character of the word we are modeling extracting its output hidden state. A backward LSTM performs the same operation going from the end of the sentence up to the first character of the word. In this case, the extracted hidden state contains information propagated from the end of the sentence to this point. Both hidden states are concatenated to generate the final embedding.
 
-POOLED EMBEDDINGS HERE
+\paragraph{Pooled Contextualized Embeddings:} These embeddings, however, struggle to generate an appropriate word representation for words in underspecified contexts, namely, in sentences in which, for example, local information is not sufficient to know the named entity type of a given word. In order to address this issue a variant of the original Flair embeddings is proposed: ``Pooled Contextualized Embeddings'' \cite{akbik2019naacl}. In this approach, every contextualized embedding is kept into a \emph{memory} which is later used in a pooling operation to obtain a global word representation consisting of the concatenation of all the local contextualized embeddings obtained for a given word. They reported significant improvements for NER by using this new version of Flair embeddings. Note that this does not affect to the way the Flair pre-trained embedding models are calculated. It affects the process of using such pre-trained models in order to obtain word representations for a given task such as NER or POS using the Flair system.
 
-The final word embeddings are passed into the BiLSTM-CRF sequence labeling architecture (Flair system) proposed by \cite{huang2015bidirectional}. Although for best results they recommend to stack their own Flair embeddings with additional static embeddings such as FastText, we will perform our evaluation with the aim of comparing the official Flair embeddings for Basque with our own Flair-BMC embeddings.
+\paragraph{Flair System:}  The calculated word embeddings are passed into the BiLSTM-CRF sequence labeling architecture (Flair system) proposed by \cite{huang2015bidirectional}. Although for best results they recommend to stack their own Flair embeddings with additional static embeddings such as FastText, in this paper our objective is to compare the official pre-trained Flair embeddings for Basque with our own Flair-BMC embeddings.
 
 % - Bert ander/jon ander
 \subsection{BERT language models}\label{sec:build-basq-models:bert}
