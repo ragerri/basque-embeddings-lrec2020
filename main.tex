@@ -127,11 +127,17 @@ As the attentions is quadratic to the sequence length, making longer sequences m
 % - Datasets iñaki/xabier/rodri
 
 \todo[inline]{Rodri: Nik atal hau kenduko nuke eta jarriko nituzke hemengo edukiak dagokien azpi-ataletan esperimentu/emaitzekin}
+\todo[inline]{iñaki: Ados egingo dut. Hemen agian idatzi behar dira gauza orokorrak : entrenamendu plataformak, gpu ezaguarriak? ingenieritzako gauzak}
 
 We conduct an extensive evaluation on four well known NLP tasks: Topic Classification, Sentiment Classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER). POS tagging and NER are evaluated on two establish benchmarks, i.e., Universal Dependencies 1.2 and the EIEC corpus.
 
-For polarity and topic classification we introduce two new datasets for Basque. For sentiment classification a corpus of tweets containing messages related to the cultural domain was used \cite{san2019multilingual}\footnote{The dataset is publicly available at \url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}. The corpus contains three class annotations (positive, negative and neutral). For the task of topic classification a dataset containing 12k news short texts was compiled. Each text is tagged as belonging to a single topic in a 12 class scheme
+- 5 run average in all evaluations. 
 
+- flair used for training and evaluating static and flair embeddings.
+
+- Bert finetuning used for training all bert models presented.
+
+- experiments done using GTX1080 and XXXX gpus 
 
 % - Text classification models iñaki/xabier
 % - Sequence labeling models iñaki/rodri/jon ander
@@ -153,20 +159,22 @@ nomenclatura: \begin{itemize}
 
 % - Topic classification xabier
 \subsection{Topic classification}\label{sec:topic}
+For the task of topic classification a dataset containing 12k news short texts was compiled. Each text is tagged as belonging to a single topic in a 12 class scheme
 
-\begin{table}[!t]\scriptsize
+\begin{table}[!t]\small
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
 %\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
  {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
 \textbf{Static Embeddings} & & \\
 fastext-wikipedia & 65.00 &	54.99 \\
-fastext-common-crawl &  &   \\
-fastext-BMC  &  &	 \\
+fastext-common-crawl & 28.82 & 3.73  \\
+fastext-BMC  & 69.45 & 60.14 \\
 \hline%\hline
 \textbf{FlairEmbeddings}\\
-Flair-official &  &	 \\
-Flair-BMC  & 	&  \\
+Flair-official & 56.83 & 50.88 \\
+Flair-BMC  & 62.42	& 54.24  \\
+Pooled Flair-BMC  & 68.53 & 60.57  \\
 %\hline
 \textbf{BERT Language Models}\\
 mBERT-official  & 68.42 & 48.38  \\
@@ -183,7 +191,9 @@ BERT-BMC  & \textbf{76.77}	& \textbf{63.46}  \\
 % - Polarity iñaki
 \subsection{Sentiment classification}\label{sec:polarity}
 
-\begin{table}[!t]\scriptsize
+For sentiment classification a corpus of tweets containing messages related to the cultural domain was used \cite{san2019multilingual}\footnote{The dataset is publicly available at \url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}. The corpus contains three class annotations (positive, negative and neutral). 
+
+\begin{table}[!t]\small
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
 %\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline 
@@ -273,7 +283,7 @@ BERT-BMC  &  & &   \\ \hline
 
 \section{Discussion}\label{sec:discussion}
 
-\begin{table*}[!t]\scriptsize
+\begin{table*}[!t]
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lcccc} \hline
 \textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
