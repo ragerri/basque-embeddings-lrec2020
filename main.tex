@@ -215,33 +215,33 @@ SVM \cite{san2019multilingual} & 74.02 & 69.87\\
 
 \subsection{POS Tagging}\label{sec:pos-tagging}
 
-In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. The Basque UD treebank \cite{aranzabe2015automatic} is based on a conversion from part of the Basque Dependency Treebank (BDT) \cite{aduriz2003construction}. The treebank consists of 5274 sentences (60563 tokens) and covers mainly literary and journalistic texts.
+In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. The Basque UD treebank \cite{aranzabe2015automatic} is based on a conversion from part of the Basque Dependency Treebank (BDT) \cite{aduriz2003construction}. The treebank consists of 5274 sentences (60563 tokens) and covers mainly literary and journalistic texts. The most significant published work on this dataset is that of \cite{plank-etal-2016-multilingual}. They propose FREQBIN, a multi-task bi-LSTM system that predicts, at each step, both the tag and the log frequency class for the next token in the sequence. The intuition is for frequency to affect the final prediction by encouraging the model not to share representations between common and rare words.
 
 \begin{table}[!t]\footnotesize
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lccc} \hline
  \textbf{} & \textbf{Word Accuracy} \\ \hline
 \textbf{Static Embeddings} & \\
-FastText-Wikipedia &  \\
+FastText-Wikipedia & 94.09 \\
 FastText-Common-Crawl & \\
 FastText-BMC  & \\ \hline
-\textbf{FlairEmbeddings}\\
-Flair-official &  \\
-Flair-BMC  &  \\ \hline
+\textbf{FlairEmbeddings} \\
+Flair-official & 97.50 \\
+Flair-BMC  &  97.58 \\ \hline
 \textbf{BERT Language Models}\\
-mBERT-official  &  \\
-BERT-BMC  & \\ \hline
+mBERT-official &  96.26 \\
+BERT-BMC & \textbf{97.68} \\ \hline
 \textbf{Baseline} \\
 \cite{plank-etal-2016-multilingual} & 95.51 \\ \hline
 \end{tabular}
 \caption{Basque POS tagging results on UD 1.2.}\label{tab:pos}
 \end{table}
 
-We train Flair using the parameters specified in \cite{akbik2019naacl}, tuning the system on the development data and using the test only for the final evaluation.
-Table shows first the results obtained by training the system with the Flair character-based contextual embeddings only. After that we combine the Flair embeddings with FastTex embeddings (both official and BMC).
+We train the Flair system to perform the following comparison between models: (i) FastText official models (Wikipedia and Common Crawl) vs FastText-BMC model; (ii) the official Flair embedding models vs our Flair-BMC model. We use the parameters specified in \cite{akbik2019naacl} for Pooled Contextual Embeddings. The system is tuned on the development data using the test only for the final evaluation.
 
+For comparison between BERT models, we fine-tune on this data with both the official multilingual BERT \cite{devlin2019bert} model and with our BERT-BMC trained as described in Section \ref{sec:build-basq-models:bert}.
 
-Furthermore, our best results establish new state-of-the-art performance for POS tagging using UD 1.2 for Basque.
+Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can been that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{plank-etal-2016-multilingual}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the differences in performance obtained by BERT-BMC with respect to mBERT-official.
 
 
 \subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
