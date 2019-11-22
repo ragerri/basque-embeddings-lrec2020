@@ -248,12 +248,9 @@ BERT-BMC & \textbf{97.68} \\ \hline
 \caption{Basque POS tagging results on UD 1.2.}\label{tab:pos}
 \end{table}
 
-We train the Flair system to perform the following comparison between models: (i) FastText official models (Wikipedia and Common Crawl) vs FastText-BMC model; (ii) the official Flair embedding models vs our Flair-BMC model. We use the parameters specified in \cite{akbik2019naacl} for Pooled Contextual Embeddings. The system is tuned on the development data using the test only for the final evaluation.
+We train the Flair system to perform the following comparison between models: (i) FastText official models (Wikipedia and Common Crawl) vs FastText-BMC model; (ii) the official Flair embedding models vs our Flair-BMC model. We use the parameters specified in \cite{akbik2019naacl} for Pooled Contextual Embeddings. The system is tuned on the development data using the test only for the final evaluation. We do not use the development set for training. For comparison between BERT models, we fine-tune on this data with both the official multilingual BERT \cite{devlin2019bert} model and with our BERT-BMC trained as described in Section \ref{sec:build-basq-models:bert}. Every reported result for the every system is the average of five randomly initialized runs.
 
-For comparison between BERT models, we fine-tune on this data with both the official multilingual BERT \cite{devlin2019bert} model and with our BERT-BMC trained as described in Section \ref{sec:build-basq-models:bert}.
-
-Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can been that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{plank-etal-2016-multilingual}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the differences in performance obtained by BERT-BMC with respect to mBERT-official.
-
+Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can been that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{plank-etal-2016-multilingual}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the difference in performance obtained by BERT-BMC with respect to mBERT-official.
 
 \subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
 
@@ -265,15 +262,15 @@ The only gold standard corpus for NER in Basque is EIEC\footnote{\url{http://ixa
  \textbf{} &\textbf{Precision} & \textbf{Recall} & \textbf{F1} \\ \hline
 \textbf{Static Embeddings} & & &  \\
 FastText-Wikipedia & & & \\
-FastText-Common-Crawl &  & &  \\
-FastText-BMC  &  & &  \\
+FastText-Common-Crawl & 72.09 & 45.31 & 55.53 \\
+FastText-BMC  & 74.12 & 67.33 & 70.56 \\
 \hline%\hline
 \textbf{Flair embeddings}\\
-Flair-official &  &  &   \\
+Flair-official &  &  &  \\
 Flair-BMC & & &  \\ \hline
 \textbf{BERT Language Models} \\
-mBERT-official  &  & &   \\
-BERT-BMC  &  & &   \\ \hline
+mBERT-official  &  & & 79.85 \\
+BERT-BMC  &  & & 87.47 \\ \hline
 \textbf{Baseline} \\
 \cite{agerri2016robust} & 80.66 & 73.14 & 76.72 \\ \hline
 \end{tabular}
@@ -290,7 +287,7 @@ BERT-BMC  &  & &   \\ \hline
  & {\textbf{Topic Classification}} & {\textbf{Polarity}} &  {\textbf{POS}} & {\textbf{NER}}\\ \hline
 \multicolumn{5}{@{}l}{\textit{\scriptsize{Static Embeddings}}} \\
 fastext-wikipedia & & & & \\
-fastext-common-crawl & & & &  \\
+fastext-common-crawl &  & & &  \\
 fastext-BMC  & & & &  \\
 \hline%\hline
 \multicolumn{5}{@{}l}{\scriptsize{\textit{Contextual Embeddings}}}\\
