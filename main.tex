@@ -69,7 +69,7 @@
 % - fastext iñaki/xabier
 \subsection{Static Embeddings: FastText}\label{sec:build-basq-models:static}
 
-To the best of our knowledge, the only publicly available static word embeddings for Basque are those distributed by Facebook computed using The FastText algorithm \cite{fasttext1_bojanowski2017enriching}. FastText  Two different pretrained word vectors are available (both having 300 dimensions):
+To the best of our knowledge, the only publicly available static word embeddings for Basque are those distributed by Facebook computed using The FastText algorithm \cite{fasttext1_bojanowski2017enriching}. FastText proposed an improvement over Word2vec, consisting on embedding subword units, thereby attempting to introduce morphological information. Rich morphology languages such as Basque should especially profit from such word representation. Two different pretrained word vectors are available (both having 300 dimensions):
 
 \textbf{Wiki word vectors} (FastText-official-wikipedia) were trained on Wikipedia using the skip-gram model described in \cite{fasttext1_bojanowski2017enriching} with default parameters (a window size of 5, 3-6 length character n-grams and 5 negatives).
 
@@ -103,7 +103,7 @@ The main differences between our model and the original implementation are the c
 
 \paragraph{Sub-word vocabulary}
 
-We create a cased sub-word vocabulary containing 50,000 tokens using the unigram language model based subword segmentation algorithm proposed by \newcite{kudo2018subword}. We do not use the same algorithm as BERT because the WordPiece \cite{wu2016google} implementation they originally used is not publicly available. We have increased the vocabulary size from 30,000 sub-word units up to 50,000 expecting to be beneficial for the Basque language due to its agglutinative nature. Our vocabulary is learned from the whole training corpus but we do not cover all the characters in order to avoid very rare ones. We set the coverage percentage to $99.95$. 
+We create a cased sub-word vocabulary containing 50,000 tokens using the unigram language model based sub-word segmentation algorithm proposed by \newcite{kudo2018subword}. We do not use the same algorithm as BERT because the WordPiece \cite{wu2016google} implementation they originally used is not publicly available. We have increased the vocabulary size from 30,000 sub-word units up to 50,000 expecting to be beneficial for the Basque language due to its agglutinative nature. Our vocabulary is learned from the whole training corpus but we do not cover all the characters in order to avoid very rare ones. We set the coverage percentage to $99.95$. 
 
 \paragraph{Model Architecture}
 
@@ -170,7 +170,7 @@ FastText-BMC  & 69.45 & 60.14 \\
 \textbf{FlairEmbeddings}\\
 Flair-official & 58.58 & 50.80 \\
 Flair-BMC  & 62.42	& 54.24  \\
-Pooled Flair-BMC  & 68.53 & 60.57  \\ \hline
+Pooled Flair-BMC  & 68.61 & 59.38  \\ \hline
 \textbf{BERT Language Models}\\
 mBERT-official  & 68.42 & 48.38  \\
 BERT-BMC  & \textbf{76.77}	& \textbf{63.46}  \\
@@ -240,6 +240,8 @@ BERT-BMC & \textbf{97.68} \\ \hline
 \caption{Basque POS tagging results on UD 1.2.}\label{tab:pos}
 \end{table}
 
+\todo[inline]{Basque ELMOk Accuracy 97.35 lortzen du hemen merezi du gehitzea??(CramemBERTEn azaltzen da) https://github.com/stefan-it/plur}
+
 Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can be seen that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{plank-etal-2016-multilingual}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the difference in performance obtained by BERT-BMC with respect to mBERT-official.
 
 \subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
@@ -267,6 +269,7 @@ BERT-BMC  & 88.11 & 87.11& \textbf{87.61} \\ \hline
 \caption{Basque NER results on EIEC corpus.}\label{tab:ner}
 \end{table}
 
+\todo[inline]{Basque ELMOk F1 82.02 lortzen du hemen merezi du gehitzea (CramemBERTen azaltzen da)?? https://github.com/stefan-it/plur}
 
 
 \section{Discussion}\label{sec:discussion}
