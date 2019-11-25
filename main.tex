@@ -90,7 +90,7 @@ Flair refers to both a deep learning system and to a specific type of character-
 
 \paragraph{Flair Embeddings:} Flair's embeddings model words as sequences of characters. Moreover, the vector-based representation of a word will depend on its surrounding context. More specifically, to generate word embeddings they feed sentences as sequences of characters into a character-level Long short-term memory (LSTM) model which at each point in the sequence is trained to predict the next character. Given a sentence, a forward LSTM language model processes the sequence from the beginning of the sentence to the last character of the word we are modeling extracting its output hidden state. A backward LSTM performs the same operation going from the end of the sentence up to the first character of the word. In this case, the extracted hidden state contains information propagated from the end of the sentence to this point. Both hidden states are concatenated to generate the final embedding.
 
-\paragraph{Pooled Contextualized Embeddings:} Flair embeddings, however, struggle to generate an appropriate word representation for words in underspecified contexts, namely, in sentences in which, for example, local information is not sufficient to know the named entity type of a given word. In order to address this issue a variant of the original Flair embeddings is proposed: ``Pooled Contextualized Embeddings'' \cite{akbik2019naacl}. In this approach, every contextualized embedding is kept into a \emph{memory} which is later used in a pooling operation to obtain a global word representation consisting of the concatenation of all the local contextualized embeddings obtained for a given word. They reported significant improvements for NER by using this new version of Flair embeddings. Note that this does not affect to the way the Flair pre-trained embedding models are calculated. It affects the process of using such pre-trained models in order to obtain word representations for a given task such as NER or POS using the Flair system.
+\paragraph{Pooled Contextualized Embeddings:} Flair embeddings, however, struggle to generate an appropriate word representation for words in underspecified contexts, namely, in sentences in which, for example, local information is not sufficient to know the named entity type of a given word. In order to address this issue a variant of the original Flair embeddings is proposed: ``Pooled Contextualized Embeddings'' \cite{akbik2019naacl}. In this approach, every contextualized embedding is kept into a \emph{memory} which is later used in a pooling operation to obtain a global word representation consisting of the concatenation of all the local contextualized embeddings obtained for a given word. They reported significant improvements for NER by using this new version of Flair embeddings. Note that this does not affect to the way the Flair pre-trained embedding models are calculated. The pooling operation is involved in the process of using such pre-trained models in order to obtain word representations for a given task such as NER or POS using the Flair system.
 
 \paragraph{Flair System:}  The calculated word embeddings are passed into the BiLSTM-CRF sequence labeling architecture (Flair system) proposed by \cite{huang2015bidirectional}. Although for best results they recommend to stack their own Flair embeddings with additional static embeddings such as FastText, in this paper our objective is to compare the official pre-trained Flair embeddings for Basque with our own Flair-BMC embeddings.
 
@@ -99,27 +99,27 @@ Flair refers to both a deep learning system and to a specific type of character-
 
 We have trained a BERT \cite{devlin2019bert} model for Basque Language using the BMC corpus motivated by the low representation this language has in the original multilingual BERT model. In this section we describe the methods used for creating the vocabulary, the model architecture, the pre-training objective and procedure.
 
-The main differences between our model and the original implementation are the corpus used for the pre-training, the algorithm for sub-word vocabulary creation and the usage of a different masking strategy that is not available for the BERT\textsubscript{BASE} model yet. 
+The main differences between our model and the original implementation are the corpus used for the pre-training, the algorithm for sub-word vocabulary creation and the usage of a different masking strategy that is not available for the BERT\textsubscript{BASE} model yet.
 
 \paragraph{Sub-word vocabulary}
 
-We create a cased sub-word vocabulary containing 50,000 tokens using the unigram language model based sub-word segmentation algorithm proposed by \newcite{kudo2018subword}. We do not use the same algorithm as BERT because the WordPiece \cite{wu2016google} implementation they originally used is not publicly available. We have increased the vocabulary size from 30,000 sub-word units up to 50,000 expecting to be beneficial for the Basque language due to its agglutinative nature. Our vocabulary is learned from the whole training corpus but we do not cover all the characters in order to avoid very rare ones. We set the coverage percentage to $99.95$. 
+We create a cased sub-word vocabulary containing 50,000 tokens using the unigram language model based sub-word segmentation algorithm proposed by \newcite{kudo2018subword}. We do not use the same algorithm as BERT because the WordPiece \cite{wu2016google} implementation they originally used is not publicly available. We have increased the vocabulary size from 30,000 sub-word units up to 50,000 expecting to be beneficial for the Basque language due to its agglutinative nature. Our vocabulary is learned from the whole training corpus but we do not cover all the characters in order to avoid very rare ones. We set the coverage percentage to $99.95$.
 
 \paragraph{Model Architecture}
 
-In the same way as the original BERT architecture proposed by \newcite{devlin2019bert} our model is composed by stacked layers of Transformer encoders \cite{vaswani2017attention}. Our approach follows the BERT\textsubscript{BASE} configuration containing 12 Transformer encoder layers, a hidden size of 768 and 12 self-attention heads for a total of 110M parameters. 
+In the same way as the original BERT architecture proposed by \newcite{devlin2019bert} our model is composed by stacked layers of Transformer encoders \cite{vaswani2017attention}. Our approach follows the BERT\textsubscript{BASE} configuration containing 12 Transformer encoder layers, a hidden size of 768 and 12 self-attention heads for a total of 110M parameters.
 
 \paragraph{Pre-training objective}
 
 Following BERT original implementation, we train our model on the Masked Language Model (MLM) and Next Sentence Prediction (NSP) tasks. Even if the necessity of the NSP task has been questioned by some recent works \cite{yang2019xlnet,liu2019roberta,lample2019cross} we have decided to keep it as in the original paper. For the MLM, given an input sequence composed of N tokens $x_1, x_2, ..., x_n$ we select a $15\%$ of them as masking candidates. Then, from this selected tokens a $80\%$ are masked by replacing them with the [MASK] token, a $10\%$ are replaced with a random word of the vocabulary and the remaining $10\%$ are left unchanged. In order to create input examples for the NSP task, we take two segments $A$ and $B$ from the training corpus, where $B$ is the true next segment for $A$ only in a $50\%$ of the cases, in the rest of the cases, $B$ is just a random segment from the corpus. At the end, the model is trained to optimize the sum of the means of the MLM and NSP likelihoods.
 
-As our vocabulary consists of sub-word units, we use whole-word masking (WWM), that applies the masking before the sub-word tokenization. This new masking strategy makes the MLM task more difficult for the system as it has to predict the whole word instead of predicting just part of it. An upgraded version of BERT\textsubscript{LARGE}\footnote{\url{https://github.com/google-research/bert}} has proven that WWM has substantial benefits in comparison with previous masking that was done after the sub-word tokenization. 
+As our vocabulary consists of sub-word units, we use whole-word masking (WWM), that applies the masking before the sub-word tokenization. This new masking strategy makes the MLM task more difficult for the system as it has to predict the whole word instead of predicting just part of it. An upgraded version of BERT\textsubscript{LARGE}\footnote{\scriptsize{\url{https://github.com/google-research/bert}}} has proven that WWM has substantial benefits in comparison with previous masking that was done after the sub-word tokenization.
 
 \paragraph{Pre-training procedure}
 
-Similar to \cite{devlin2019bert} we use Adam with learning rate of $1e-4$, $\beta_1=0.9$, $\beta_2=0.999$, L2 weight decay of $0.01$, learning rate warmup over the first $10,0000$ steps, and linear decay of the learning rate. The dropout probability is fixed to $0.1$ on all the layers. 
+Similar to \cite{devlin2019bert} we use Adam with learning rate of $1e-4$, $\beta_1=0.9$, $\beta_2=0.999$, L2 weight decay of $0.01$, learning rate warmup over the first $10,0000$ steps, and linear decay of the learning rate. The dropout probability is fixed to $0.1$ on all the layers.
 
-As the attentions is quadratic to the sequence length, making longer sequences much more expensive, we pre-train the model with sequence length of $128$ for $90\%$ of the steps and sequence length of $512$ for $10\%$ of the steps. In total we train for $1,000,000$ steps and a batch size of $256$. The first $90\%$ steps are trained using Cloud v2 TPUs and for the rest of the steps we use Cloud v3 TPUs \footnote{\url{https://cloud.google.com/tpu/pricing}}. 
+As the attentions is quadratic to the sequence length, making longer sequences much more expensive, we pre-train the model with sequence length of $128$ for $90\%$ of the steps and sequence length of $512$ for $10\%$ of the steps. In total we train for $1,000,000$ steps and a batch size of $256$. The first $90\%$ steps are trained using Cloud v2 TPUs and for the rest of the steps we use Cloud v3 TPUs \footnote{\scriptsize{\url{https://cloud.google.com/tpu/pricing}}}.
 
 % - Text classification models iñaki/xabier
 % - Sequence labeling models iñaki/rodri/jon ander
@@ -129,11 +129,11 @@ As the attentions is quadratic to the sequence length, making longer sequences m
 
 
 nomenclatura: \begin{itemize}
-    \item fastext-official-wikipedia
-    \item fastext-official-common-crawl
-    \item fastext-BMC
-    \item flair-official
-    \item flair-BMC
+    \item FastText-official-wikipedia
+    \item FastText-official-common-crawl
+    \item FastText-BMC
+    \item Flair-official
+    \item Flair-BMC
     \item mBERT-official
     \item BERT-BMC
 \end{itemize}
@@ -148,10 +148,9 @@ nomenclatura: \begin{itemize}
 
 %\todo[inline]{iñaki: Eduki batzuk orokorrak dira, pos-tagging atalean idatzi duzuna hemen sartu dut}
 
-We conduct an extensive evaluation on four well known NLP tasks: Topic Classification, Sentiment Classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER). POS tagging and NER are evaluated on two establish benchmarks, i.e., Universal Dependencies 1.2 and the EIEC corpus. 
+We conduct an extensive evaluation on four well known NLP tasks: Topic Classification, Sentiment Classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER). The datasets used for each task are described in their respective sections.
 
-We train our systems to perform the following comparison between models: (i) FastText official models (Wikipedia and Common Crawl) vs FastText-BMC model; (ii) the official Flair embedding models vs our Flair-BMC model. We use the parameters specified in \cite{akbik2019naacl} for Pooled Contextual Embeddings. The system is tuned on the development data using the test only for the final evaluation. We do not use the development set for training. For comparison between BERT models, we fine-tune on this data with both the official multilingual BERT \cite{devlin2019bert} model and with our BERT-BMC trained as described in Section.  \ref{sec:build-basq-models:bert}. Every reported result for every system is the average of five randomly initialized runs.
-
+We train our systems to perform the following comparisons: (i) FastText official models (Wikipedia and Common Crawl) vs FastText-BMC model; (ii) the official Flair embedding models vs our Flair-BMC model. We use the parameters specified in \cite{akbik2019naacl} for Pooled Contextual Embeddings. The system is tuned on the development data using the test only for the final evaluation. We do not use the development set for training. For comparison between BERT models, we fine-tune on this data with both the official multilingual BERT \cite{devlin2019bert} model and with our BERT-BMC trained as described in Section.  \ref{sec:build-basq-models:bert}. Every reported result for every system is the average of five randomly initialized runs.
 
 % - Topic classification xabier
 \subsection{Topic classification}\label{sec:topic}
@@ -174,7 +173,7 @@ Pooled Flair-BMC  & 68.61 & 59.38  \\ \hline
 \textbf{BERT Language Models}\\
 mBERT-official  & 68.42 & 48.38  \\
 BERT-BMC  & \textbf{76.77}	& \textbf{63.46}  \\
-\hline 
+\hline
 \textbf{Baseline} \\
 TF-IDF Logistic Regression & 63.00 & 49.00 \\
 \hline
@@ -182,17 +181,17 @@ TF-IDF Logistic Regression & 63.00 & 49.00 \\
 \caption{Basque topic classification results on Argia corpus.}\label{tab:topic}
 \end{table}
 
-
 Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can been that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{plank-etal-2016-multilingual}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the difference in performance obtained by BERT-BMC with respect to mBERT-official.
+
 % - Polarity iñaki
 \subsection{Sentiment classification}\label{sec:polarity}
 
-For sentiment classification a corpus of tweets containing messages related to the cultural domain was used \cite{san2019multilingual}\footnote{The dataset is publicly available at \url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}. The corpus contains three class annotations (positive, negative and neutral), and a total of 2,936 examples. For the experiments in this paper the corpus was divided into train (\%80), test(\%10) and development(\%10) sets. Class distribution for the corpus is 32\% positive, 54\% neutral and 14\% negative.
+For sentiment classification a corpus of tweets containing messages related to the cultural domain was used \cite{san2019multilingual}\footnote{Dataset publicly available at \scriptsize{\url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}}. The corpus contains three class annotations (positive, negative and neutral), and a total of 2,936 examples. For the experiments in this paper the corpus was divided into train (\%80), test(\%10) and development(\%10) sets. Class distribution for the corpus is 32\% positive, 54\% neutral and 14\% negative.
 
 \begin{table}[!t]\small
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
-%\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline 
+%\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
  {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
 \textbf{Static Embeddings} & & \\
 FastText-Wikipedia & 71.10 &	66.72 \\
@@ -204,10 +203,9 @@ Flair-official & 69.93 & 64.06 \\
 Flair-BMC  & 71.71	& 68.51 \\ \hline
 \textbf{BERT Language Models}\\
 mBERT-official  & 71.02 & 66.02 \\
-BERT-BMC  & \textbf{78.10}	& \textbf{76.14}  \\
-\hline 
-\multicolumn{3}{@{}l}{\scriptsize{\textb{Previous state-of-the-art}}} \\
+BERT-BMC  & \textbf{78.10}	& \textbf{76.14} \\
 \hline
+\multicolumn{3}{@{}l}{\scriptsize{\textbf{Previous state-of-the-art}}} \\ \hline
 SVM \cite{san2019multilingual} & 74.02 & 69.87\\ \hline
 \end{tabular}
 \caption{Basque sentiment classification task on Behagune tweet corpus.}\label{tab:sentiment}
@@ -218,7 +216,7 @@ SVM \cite{san2019multilingual} & 74.02 & 69.87\\ \hline
 
 \subsection{POS Tagging}\label{sec:pos-tagging}
 
-In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. The Basque UD treebank \cite{aranzabe2015automatic} is based on a conversion from part of the Basque Dependency Treebank (BDT) \cite{aduriz2003construction}. The treebank consists of 5274 sentences (60563 tokens) and covers mainly literary and journalistic texts. The most significant published work on this dataset is that of \cite{plank-etal-2016-multilingual}. They propose FREQBIN, a multi-task bi-LSTM system that predicts, at each step, both the tag and the log frequency class for the next token in the sequence. The intuition is for frequency to affect the final prediction by encouraging the model not to share representations between common and rare words.
+In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. The Basque UD treebank \cite{aranzabe2015automatic} is based on a conversion from part of the Basque Dependency Treebank (BDT) \cite{aduriz2003construction}. The treebank consists of 5274 sentences (60563 tokens) and covers mainly literary and journalistic texts. The most significant published work on this dataset is that of \cite{plank-etal-2016-multilingual}. They propose FREQBIN, a multi-task bi-LSTM system that predicts, at each step, both the tag and the log frequency class for the next token in the sequence. The intuition for the frequency to affect the final prediction by encouraging the model not to share representations between common and rare words.
 
 \begin{table}[!t]\footnotesize
 \centering
@@ -240,28 +238,26 @@ BERT-BMC & \textbf{97.68} \\ \hline
 \caption{Basque POS tagging results on UD 1.2.}\label{tab:pos}
 \end{table}
 
-\todo[inline]{Basque ELMOk Accuracy 97.35 lortzen du hemen merezi du gehitzea??(CramemBERTEn azaltzen da) https://github.com/stefan-it/plur}
-
 Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can be seen that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{plank-etal-2016-multilingual}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the difference in performance obtained by BERT-BMC with respect to mBERT-official.
 
 \subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
 
-The only gold standard corpus for NER in Basque is EIEC\footnote{\url{http://ixa2.si.ehu.eus/eiec/eiec_v1.0.tgz}} \cite{alegria2006lessons}. The corpus contains 44K tokens for training (3817 unique entities) and 15K for testing (931 entities). Although EIEC is annotated with four entity types (Location, Person, Organization and Miscellaneous), the \emph{Miscellaneous} class is rather sparse, occurring only in a proportion of 1 to 10 with respect to the other three classes. Thus, in the training data there are 156 entities annotated as \emph{Miscellaneous} whereas for each of the other three classes it contains around 1200 entities.
+The only gold standard corpus for NER in Basque is EIEC\footnote{\scriptsize{\url{http://ixa2.si.ehu.eus/eiec/eiec_v1.0.tgz}}} \cite{alegria2006lessons}. The corpus contains 44K tokens for training (3817 unique entities) and 15K for testing (931 entities). Although EIEC is annotated with four entity types (Location, Person, Organization and Miscellaneous), the \emph{Miscellaneous} class is rather sparse, occurring only in a proportion of 1 to 10 with respect to the other three classes. Thus, in the training data there are 156 entities annotated as \emph{Miscellaneous} whereas for each of the other three classes it contains around 1200 entities.
 
 \begin{table}[!t]\footnotesize
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lccc} \hline
  \textbf{} &\textbf{Precision} & \textbf{Recall} & \textbf{F1} \\ \hline
 \textbf{Static Embeddings} & & &  \\
-FastText-Wikipedia & & & \\
+FastText-Wikipedia & 72.42 & 50.28 & 59.23 \\
 FastText-Common-Crawl & 72.09 & 45.31 & 55.53 \\
 FastText-BMC  & 74.12 & 67.33 & 70.56 \\
 \hline%\hline
 \textbf{Flair embeddings}\\
-Flair-official &  &  &  \\
-Flair-BMC & & &  \\ \hline
+Flair-official & 81.86 & 79.89 & 80.82 \\
+Flair-BMC & 84.32 & 82.66 & 83.48 \\ \hline
 \textbf{BERT Language Models} \\
-mBERT-official  & 78.77 &80.10 & 79.43 \\
+mBERT-official  & 78.77 & 80.10 & 79.43 \\
 BERT-BMC  & 88.11 & 87.11& \textbf{87.61} \\ \hline
 \textbf{Baseline} \\
 \cite{agerri2016robust} & 80.66 & 73.14 & 76.72 \\ \hline
@@ -269,7 +265,12 @@ BERT-BMC  & 88.11 & 87.11& \textbf{87.61} \\ \hline
 \caption{Basque NER results on EIEC corpus.}\label{tab:ner}
 \end{table}
 
+As for previous tasks above, we compare our BMC-trained models (FastText, Flair and BERT) with respect to the official releases. We also compare with the previous published baseline on this dataset, which trains a Perceptron model with a simple and shallow feature set combined with clustering features based on unigram matching \cite{agerri2016robust}.
+
+Table \ref{tab:ner} reports the results of our comparison for NER using the usual conlleval script from the CoNLL NER shared tasks \footnote{\scriptsize{\url{https://www.clips.uantwerpen.be/conll2002/ner/}}}. We can see that the BMC-trained models improve over the official models distributed by FasText, Flair and mBERT, with a much larger margin than for POS tagging. It is also worth mentioning that there is a nice balance between the precision and the recall obtained by both Flair-BMC and BERT-BMC. Finally, we think that the larger differences in performance between NER and POS tagging might be partially due to the small size of the EIEC NER corpus. In any case, more experimentation is required to clarify the issue.
+
 \todo[inline]{Basque ELMOk F1 82.02 lortzen du hemen merezi du gehitzea (CramemBERTen azaltzen da)?? https://github.com/stefan-it/plur}
+\todo[inline]{Rodri: Ez dut uste jarri behar dugunik. Ez dago argitalpenik eta ez dakigu nola egin zituen entrenamenduak: parametroak, dev for training, etab. Adibidez bere mBERT emaitzak gureak baina baxuagoak dira. Gainera, flair-ekin entrenatu eta ebaluatu baditu modeloak, posible da F1 scores gaizki egotea, Flair-ek ez baitu ematen conll-en F1 score-a.}
 
 
 \section{Discussion}\label{sec:discussion}
@@ -305,7 +306,7 @@ BERT-BMC  & \textbf{76.77} & \textbf{78.10} & \textbf{97.68} & \textbf{87.61} \\
 
 \section{Conclusions and future work}\label{sec:concl-future-work}
 
-\section*{Acknowledgments}
+\section{Acknowledgments}
 
 This work has been funded by the~Spanish Ministry of Science, Innovation and Universities under the project DeepReading (RTI2018-096846-B-C21) (MCIU/AEI/FEDER, UE) and by the BBVA Big Data 2018 ``BigKnowledge for Text Mining (BigKnowledge)'' project.
 %The XX author is funded by the Ramon y Cajal Fellowship RYC-2017-23647. We also acknowledge the~support of the NVIDIA Corporation with the~donation of a Titan V GPU used for this research.
