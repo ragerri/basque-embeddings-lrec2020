@@ -69,21 +69,20 @@
 % - fastext iñaki/xabier
 \subsection{Static Embeddings: FastText}\label{sec:build-basq-models:static}
 
-To the best of our knowledge, the only publicly available static word embeddings for basque are those distributed by Facebook computed from two sources by using The FastText algorithm \cite{}:
-\begin{itemize}
-    \item Wikipedia (wiki-ft) based embeddings \cite{fasttext1_bojanowski2017enriching} (skipgram,d300,mf5,char3\_6,w5,e5,negs5)
-    \item Common Crawl and Wikipedia based embeddings (cc-ft) \cite{fasttext2_grave2018learning}
-\end{itemize} and cc-wiki (cbow,char\_5-5,w5,e5,negs10)
-Ours: default original paper (ref. needed) -  (cbow,d300,mf5,char3\_6,w5,e5,negs5)
-Ablation tests?
+To the best of our knowledge, the only publicly available static word embeddings for Basque are those distributed by Facebook computed using The FastText algorithm \cite{fasttext1_bojanowski2017enriching}. FastText  Two different pretrained word vectors are available (both having 300 dimensions):
 
-Mention to word2vec?
+\textbf{Wiki word vectors} (FastText-official-wikipedia) were trained on Wikipedia using the skip-gram model described in \cite{fasttext1_bojanowski2017enriching} with default parameters (a window size of 5, 3-6 length character n-grams and 5 negatives).
 
+\textbf{Common Crawl word vectors} (FastText-official-common-crawl) were trained on common crawl and wikipedia using CBOW with position-weights, with character n-grams of length 5, a window of size 5 and 10 negatives .  \cite{fasttext2_grave2018learning}
+
+\textbf{BMC word vectors} (FastText-BMC) were trained on the BMC corpus described above, using CBOW with position-weights, but with the default parameters of the original paper \cite{fasttext1_bojanowski2017enriching}. The reason for that is that for Basque language the parameters reported to be best in \cite{fasttext2_grave2018learning} produce systematically worse results in our experiments. We test this over the sentiment classification task by producing our own FastText models for  
+FastText-official-common-crawl and 
+table
 
 % - Flair rodri
 \subsection{Contextual String Embeddings: Flair}\label{sec:build-basq-models:flair}
 
-Static word embeddings such as FastText \cite{fasttext1_bojanowski2017enriching} provide a unique vector-based representation for a given word independently of the context in which the word occurs. Thus, if we consider the Basque word \emph{banku}\footnote{In English: bank.}, static word embedding approaches will calculate one vector irrespective of the fact that the same word \emph{banku} may convey in some contexts different senses, namely, ``financial institution'',``bench'', ``supply or stock'', among others. This problem has been recently addressed by the so-called contextual word embeddings with the objective of being able to generate different word representations according to the context in which the word appears. Example of such contextual representations are ELMO \cite{Peters:2018} and Flair \cite{akbik2018coling}.
+Static word embeddings such as FastText \cite{fasttext1_bojanowski2017enriching} provide a unique vector-based representation for a given word independently of the context in which the word occurs. Thus, if we consider the Basque word \emph{banku}\footnote{In English: bank.}, static word embedding approaches will calculate one vector irrespective of the fact that the same word \emph{banku} may convey different senses when used in different contexts, namely, ``financial institution'',``bench'', ``supply or stock'', among others. In order to address this problem, contextual word embeddings are proposed; the idea is to be able to generate different word representations according to the context in which the word appears. Examples of such contextual representations are ELMO \cite{Peters:2018} and Flair \cite{akbik2018coling}.
 
 Flair refers to both a deep learning system and to a specific type of character-based contextual word embeddings. Flair (embeddings and system) have been successfully applied to sequence labeling tasks obtaining state-of-the-art results for a number of English Named Entity Recognition (NER) and Part-of-Speech tagging benchmarks \cite{akbik2018coling}, outperforming other well-known approaches such as BERT and ELMO \cite{devlin2019bert,Peters:2018}. In any case, Flair is of interest to us because they distribute their own Basque pre-trained embedding models obtained from a corpus of 36M tokens (combining OPUS and Wikipedia).
 
@@ -91,7 +90,7 @@ Flair refers to both a deep learning system and to a specific type of character-
 
 \paragraph{Flair Embeddings:} Flair's embeddings model words as sequences of characters. Moreover, the vector-based representation of a word will depend on its surrounding context. More specifically, to generate word embeddings they feed sentences as sequences of characters into a character-level Long short-term memory (LSTM) model which at each point in the sequence is trained to predict the next character. Given a sentence, a forward LSTM language model processes the sequence from the beginning of the sentence to the last character of the word we are modeling extracting its output hidden state. A backward LSTM performs the same operation going from the end of the sentence up to the first character of the word. In this case, the extracted hidden state contains information propagated from the end of the sentence to this point. Both hidden states are concatenated to generate the final embedding.
 
-\paragraph{Pooled Contextualized Embeddings:} These embeddings, however, struggle to generate an appropriate word representation for words in underspecified contexts, namely, in sentences in which, for example, local information is not sufficient to know the named entity type of a given word. In order to address this issue a variant of the original Flair embeddings is proposed: ``Pooled Contextualized Embeddings'' \cite{akbik2019naacl}. In this approach, every contextualized embedding is kept into a \emph{memory} which is later used in a pooling operation to obtain a global word representation consisting of the concatenation of all the local contextualized embeddings obtained for a given word. They reported significant improvements for NER by using this new version of Flair embeddings. Note that this does not affect to the way the Flair pre-trained embedding models are calculated. It affects the process of using such pre-trained models in order to obtain word representations for a given task such as NER or POS using the Flair system.
+\paragraph{Pooled Contextualized Embeddings:} Flair embeddings, however, struggle to generate an appropriate word representation for words in underspecified contexts, namely, in sentences in which, for example, local information is not sufficient to know the named entity type of a given word. In order to address this issue a variant of the original Flair embeddings is proposed: ``Pooled Contextualized Embeddings'' \cite{akbik2019naacl}. In this approach, every contextualized embedding is kept into a \emph{memory} which is later used in a pooling operation to obtain a global word representation consisting of the concatenation of all the local contextualized embeddings obtained for a given word. They reported significant improvements for NER by using this new version of Flair embeddings. Note that this does not affect to the way the Flair pre-trained embedding models are calculated. It affects the process of using such pre-trained models in order to obtain word representations for a given task such as NER or POS using the Flair system.
 
 \paragraph{Flair System:}  The calculated word embeddings are passed into the BiLSTM-CRF sequence labeling architecture (Flair system) proposed by \cite{huang2015bidirectional}. Although for best results they recommend to stack their own Flair embeddings with additional static embeddings such as FastText, in this paper our objective is to compare the official pre-trained Flair embeddings for Basque with our own Flair-BMC embeddings.
 
@@ -122,27 +121,12 @@ Similar to \cite{devlin2019bert} we use Adam with learning rate of $1e-4$, $\bet
 
 As the attentions is quadratic to the sequence length, making longer sequences much more expensive, we pre-train the model with sequence length of $128$ for $90\%$ of the steps and sequence length of $512$ for $10\%$ of the steps. In total we train for $1,000,000$ steps and a batch size of $256$. The first $90\%$ steps are trained using Cloud v2 TPUs and for the rest of the steps we use Cloud v3 TPUs \footnote{\url{https://cloud.google.com/tpu/pricing}}. 
 
-\section{Experimental settings}\label{sec:exper-sett}
-
-% - Datasets iñaki/xabier/rodri
-
-\todo[inline]{Rodri: Nik atal hau kenduko nuke eta jarriko nituzke hemengo edukiak dagokien azpi-ataletan esperimentu/emaitzekin}
-\todo[inline]{iñaki: Ados egingo dut. Hemen agian idatzi behar dira gauza orokorrak : entrenamendu plataformak, gpu ezaguarriak? ingenieritzako gauzak}
-
-We conduct an extensive evaluation on four well known NLP tasks: Topic Classification, Sentiment Classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER). POS tagging and NER are evaluated on two establish benchmarks, i.e., Universal Dependencies 1.2 and the EIEC corpus.
-
-- 5 run average in all evaluations. 
-
-- flair used for training and evaluating static and flair embeddings.
-
-- Bert finetuning used for training all bert models presented.
-
-- experiments done using GTX1080 and XXXX gpus 
-
 % - Text classification models iñaki/xabier
 % - Sequence labeling models iñaki/rodri/jon ander
 
-\section{Results and discussion}\label{sec:results-discussion}
+\section{Evaluation and Results}\label{sec:eval-results}
+\todo[inline]{iñaki: izena aldatu diot honi, Discussion atal bat dagoelako dagoeneko gero}
+
 
 nomenclatura: \begin{itemize}
     \item fastext-official-wikipedia
@@ -157,6 +141,18 @@ nomenclatura: \begin{itemize}
 \todo[inline]{ataza bakoitzeko taula bat eta atal bat, emaitza horiek komentatzen, artearen egoera barne.}
 
 
+
+% - Datasets iñaki/xabier/rodri
+
+%\todo[inline]{Rodri: Nik atal hau kenduko nuke eta jarriko nituzke hemengo edukiak dagokien azpi-ataletan esperimentu/emaitzekin}
+
+%\todo[inline]{iñaki: Eduki batzuk orokorrak dira, pos-tagging atalean idatzi duzuna hemen sartu dut}
+
+We conduct an extensive evaluation on four well known NLP tasks: Topic Classification, Sentiment Classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER). POS tagging and NER are evaluated on two establish benchmarks, i.e., Universal Dependencies 1.2 and the EIEC corpus. 
+
+We train our systems to perform the following comparison between models: (i) FastText official models (Wikipedia and Common Crawl) vs FastText-BMC model; (ii) the official Flair embedding models vs our Flair-BMC model. We use the parameters specified in \cite{akbik2019naacl} for Pooled Contextual Embeddings. The system is tuned on the development data using the test only for the final evaluation. We do not use the development set for training. For comparison between BERT models, we fine-tune on this data with both the official multilingual BERT \cite{devlin2019bert} model and with our BERT-BMC trained as described in Section.  \ref{sec:build-basq-models:bert}. Every reported result for every system is the average of five randomly initialized runs.
+
+
 % - Topic classification xabier
 \subsection{Topic classification}\label{sec:topic}
 For the task of topic classification a dataset containing 12k news short texts was compiled. Each text is tagged as belonging to a single topic in a 12 class scheme
@@ -167,31 +163,31 @@ For the task of topic classification a dataset containing 12k news short texts w
 %\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
  {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
 \textbf{Static Embeddings} & & \\
-fastext-wikipedia & 65.00 &	54.99 \\
-fastext-common-crawl & 28.82 & 3.73  \\
-fastext-BMC  & 69.45 & 60.14 \\
+FastText-Wikipedia & 65.00 & 54.99 \\
+FastText-Common-Crawl & 28.82 & 3.73  \\
+FastText-BMC  & 69.45 & 60.14 \\
 \hline%\hline
 \textbf{FlairEmbeddings}\\
-Flair-official & 56.83 & 50.88 \\
+Flair-official & 58.58 & 50.80 \\
 Flair-BMC  & 62.42	& 54.24  \\
-Pooled Flair-BMC  & 68.53 & 60.57  \\
-%\hline
+Pooled Flair-BMC  & 68.53 & 60.57  \\ \hline
 \textbf{BERT Language Models}\\
 mBERT-official  & 68.42 & 48.38  \\
 BERT-BMC  & \textbf{76.77}	& \textbf{63.46}  \\
 \hline 
 \textbf{Baseline} \\
-
-%\hline
-%- & - & -\\
+TF-IDF Logistic Regression & 63.00 & 49.00 \\
+\hline
 \end{tabular}
-\caption{Results for the topic classification task}\label{tab:topic}
+\caption{Basque topic classification results on Argia corpus.}\label{tab:topic}
 \end{table}
 
+
+Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can been that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{plank-etal-2016-multilingual}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the difference in performance obtained by BERT-BMC with respect to mBERT-official.
 % - Polarity iñaki
 \subsection{Sentiment classification}\label{sec:polarity}
 
-For sentiment classification a corpus of tweets containing messages related to the cultural domain was used \cite{san2019multilingual}\footnote{The dataset is publicly available at \url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}. The corpus contains three class annotations (positive, negative and neutral). 
+For sentiment classification a corpus of tweets containing messages related to the cultural domain was used \cite{san2019multilingual}\footnote{The dataset is publicly available at \url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}. The corpus contains three class annotations (positive, negative and neutral), and a total of 2,936 examples. For the experiments in this paper the corpus was divided into train (\%80), test(\%10) and development(\%10) sets. Class distribution for the corpus is 32\% positive, 54\% neutral and 14\% negative.
 
 \begin{table}[!t]\small
 \centering
@@ -199,27 +195,23 @@ For sentiment classification a corpus of tweets containing messages related to t
 %\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline 
  {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
 \textbf{Static Embeddings} & & \\
-fastext-wikipedia & 71.10 &	66.72 \\
-fastext-common-crawl & 66.16 & 58.89  \\
-fastext-BMC  & 72.19 &	68.14 \\
+FastText-Wikipedia & 71.10 &	66.72 \\
+FastText-Common-Crawl & 66.16 & 58.89  \\
+FastText-BMC  & 72.19 &	68.14 \\
 \hline%\hline
 \textbf{FlairEmbeddings}\\
 Flair-official & 69.93 & 64.06 \\
-Flair-BMC  & 71.71	& 68.51 \\
-%\hline
+Flair-BMC  & 71.71	& 68.51 \\ \hline
 \textbf{BERT Language Models}\\
 mBERT-official  & 71.02 & 66.02 \\
 BERT-BMC  & \textbf{78.10}	& \textbf{76.14}  \\
 \hline 
 \multicolumn{3}{@{}l}{\scriptsize{\textb{Previous state-of-the-art}}} \\
 \hline
-SVM \cite{san2019multilingual} & 74.02 & 69.87\\
+SVM \cite{san2019multilingual} & 74.02 & 69.87\\ \hline
 \end{tabular}
-\caption{Results for the sentiment classification task}\label{tab:sentiment}
+\caption{Basque sentiment classification task on Behagune tweet corpus.}\label{tab:sentiment}
 \end{table}
-\todo[inline]{Behin behinekoa da taula, zalantza dugu xehetasun gehiago jarri (klase bakoitzeko f1 scoreak adib). Komeni da adostea denok? Edo taula hauetan bakoitzak bere egitura jarraitzea hobe da ataza bakoitzean nabarmentzeko gauzak ezberdinak izan daitezkeelako?}
-
-
 
 % - PoS tagging rodri/iñaki
 % - NERC rodri
@@ -234,8 +226,8 @@ In order to facilitate comparison with previous state-of-the-art methods, we exp
  \textbf{} & \textbf{Word Accuracy} \\ \hline
 \textbf{Static Embeddings} & \\
 FastText-Wikipedia & 94.09 \\
-FastText-Common-Crawl & \\
-FastText-BMC  & \\ \hline
+FastText-Common-Crawl & 91.95 \\
+FastText-BMC  & 96.14 \\ \hline
 \textbf{FlairEmbeddings} \\
 Flair-official & 97.50 \\
 Flair-BMC  &  97.58 \\ \hline
@@ -248,9 +240,7 @@ BERT-BMC & \textbf{97.68} \\ \hline
 \caption{Basque POS tagging results on UD 1.2.}\label{tab:pos}
 \end{table}
 
-We train the Flair system to perform the following comparison between models: (i) FastText official models (Wikipedia and Common Crawl) vs FastText-BMC model; (ii) the official Flair embedding models vs our Flair-BMC model. We use the parameters specified in \cite{akbik2019naacl} for Pooled Contextual Embeddings. The system is tuned on the development data using the test only for the final evaluation. We do not use the development set for training. For comparison between BERT models, we fine-tune on this data with both the official multilingual BERT \cite{devlin2019bert} model and with our BERT-BMC trained as described in Section \ref{sec:build-basq-models:bert}. Every reported result for the every system is the average of five randomly initialized runs.
-
-Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can been that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{plank-etal-2016-multilingual}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the difference in performance obtained by BERT-BMC with respect to mBERT-official.
+Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can be seen that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{plank-etal-2016-multilingual}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the difference in performance obtained by BERT-BMC with respect to mBERT-official.
 
 \subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
 
@@ -269,13 +259,14 @@ FastText-BMC  & 74.12 & 67.33 & 70.56 \\
 Flair-official &  &  &  \\
 Flair-BMC & & &  \\ \hline
 \textbf{BERT Language Models} \\
-mBERT-official  &  & & 79.85 \\
-BERT-BMC  &  & & 87.47 \\ \hline
+mBERT-official  & 78.77 &80.10 & 79.43 \\
+BERT-BMC  & 88.11 & 87.11& \textbf{87.61} \\ \hline
 \textbf{Baseline} \\
 \cite{agerri2016robust} & 80.66 & 73.14 & 76.72 \\ \hline
 \end{tabular}
 \caption{Basque NER results on EIEC corpus.}\label{tab:ner}
 \end{table}
+
 
 
 \section{Discussion}\label{sec:discussion}
@@ -285,19 +276,20 @@ BERT-BMC  &  & & 87.47 \\ \hline
 \begin{tabular}{@{\hspace{0.3cm}}lcccc} \hline
 \textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
  & {\textbf{Topic Classification}} & {\textbf{Polarity}} &  {\textbf{POS}} & {\textbf{NER}}\\ \hline
-\multicolumn{5}{@{}l}{\textit{\scriptsize{Static Embeddings}}} \\
-fastext-wikipedia & & & & \\
-fastext-common-crawl &  & & &  \\
-fastext-BMC  & & & &  \\
+\multicolumn{5}{@{}l}{\textbf{Static Embeddings}} \\
+FastText-Wikipedia & 65.00 & 71.10 & 94.09 & \\
+FastText-Common-Crawl & 28.82 & 66.16 & & 55.53 \\
+FastText-BMC  & 69.45 & 72.19 & & 70.56 \\
 \hline%\hline
-\multicolumn{5}{@{}l}{\scriptsize{\textit{Contextual Embeddings}}}\\
-Flair-official & & & &  \\
-Flair-BMC  & & & &  \\
+\multicolumn{5}{@{}l}{\textbf{Flair Embeddings}}\\
+Flair-official & 56.83 & 69.93 & 97.50 &  \\
+Flair-BMC  & 62.42 & 71.71 & 97.58 &  \\
 %\hline
-%\multicolumn{5}{@{}l}{\scriptsize{\textit{BERT Embeddings}}}\\
-mBERT-official  & & & &  \\
-BERT-BMC  & & & &  \\ \hline
-\multicolumn{5}{@{}l}{\scriptsize{\textit{Previous state-of-the-art}}} \\
+\multicolumn{5}{@{}l}{\textbf{BERT Embeddings}}\\
+mBERT-official  & 68.42 & 71.02 & 92.26 & 79.43 \\
+BERT-BMC  & \textbf{76.77} & \textbf{78.10} & \textbf{97.68} & \textbf{87.61} \\ \hline
+\multicolumn{5}{@{}l}{\textbf{Previous state-of-the-art}} \\
+ & 63.00 & 74.02 & 95.51 & 76.72 \\
 \hline
 \end{tabular}
 \caption{Summary table across all tasks. Micro F1 scores are reported}\label{sec:results-discussion:table}
