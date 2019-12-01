@@ -24,8 +24,8 @@
 %Build-your-own is better than public text representation models: \\ evidence for the Basque Language\\
 }
 
-\name{Rodrigo Agerri$^{*1}$ , Iñaki San Vicente$^{*2}$ , Jon Ander Campos$^{*1}$ , Ander Barrena$^{*1}$,\\
-        \large{\textbf{Xabier Saralegi$^2$ , Aitor Soroa$^1$ , Eneko Agirre$^1$ }}}
+\name{Rodrigo Agerri$^{*1}$, Iñaki San Vicente$^{*2}$, Jon Ander Campos$^{*1}$, Ander Barrena$^{*1}$,\\
+        \large{\textbf{Xabier Saralegi$^2$, Aitor Soroa$^1$, Eneko Agirre$^1$ }}}
 
 \address{\\ IXA Group, HiTZ Centre, University of the Basque Country UPV/EHU$^1$, Elhuyar Foundation$^2$  \\
          %Address1, Address2, Address3 \\
@@ -100,7 +100,7 @@ In order to train accurately word embeddings and language models we need a corpu
 % - fastext iñaki/xabier
 \subsection{Static Embeddings: FastText}\label{sec:build-basq-models:static}
 
-To the best of our knowledge, the only publicly available static word embeddings for Basque are those distributed by Facebook and learned using an approach based on the skipgram model, where  each  word  is  represented as a bag of character n-grams \cite{fasttext1_bojanowski2017enriching}. The approach is implemented in the FastText library\footnote{https://fasttext.cc/}, and two types of pre-trained word vectors are available (based on 300 dimensions):
+To the best of our knowledge, the only publicly available static word embeddings for Basque are those distributed by Facebook and learned using an approach based on the skipgram model, where  each  word  is  represented as a bag of character n-grams \cite{fasttext1_bojanowski2017enriching}. The approach is implemented in the FastText library\footnote{\url{https://fasttext.cc/}}, and two types of pre-trained word vectors are available (based on 300 dimensions):
 
 \textbf{Wiki word vectors} (FastText-official-wikipedia) were trained on Wikipedia using the skip-gram model described in \cite{fasttext1_bojanowski2017enriching} with default parameters (a window size of 5, 3-6 length character n-grams and 5 negatives).
 
@@ -192,7 +192,7 @@ Every reported result for every system is the average of five randomly initializ
 % - Topic classification xabier
 \subsection{Topic classification}\label{sec:topic}
 
-For the task of topic classification a dataset containing 12k news headlines (brief article descriptions) was compiled from the Basque weekly newspaper Argia\footnote{https://www.argia.eus}. News are classified uniquely according to twelve thematic categories. The dataset was divided into train (70\%), development (15\%) and test datasets (15\%). The Basque Headlines Topic Classification (BHTC) dataset is publicly available under cc license\footnote{\url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/BHTC.tgz}} 
+For the task of topic classification a dataset containing 12k news headlines (brief article descriptions) was compiled from the Basque weekly newspaper Argia\footnote{\url{https://www.argia.eus}}. News are classified uniquely according to twelve thematic categories. The dataset was divided into train (70\%), development (15\%) and test datasets (15\%). The Basque Headlines Topic Classification (BHTC) dataset is publicly available under cc license\footnote{\url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/BHTC.tgz}} 
 
 The FastText and Flair related experiments were conducted using the Flair text classifier with the same hyperparameter setting\footnote{max-epoch 50, learning rate 0.1, minibatch size 64, and  patience 3 }. BERT-BMC and mBERT fine-tuning was performed over 3 epochs with a learning rate of 2e-5 and a batch size of 16.
 
