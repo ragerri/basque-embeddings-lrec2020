@@ -309,20 +309,11 @@ BERT-BMC  & 88.11 & 87.11& \textbf{87.61} \\ \hline
 \caption{Basque NER results on EIEC corpus.}\label{tab:ner}
 \end{table}
 
-As for previous tasks above, we compare our BMC-trained models (FastText, Flair and BERT) with respect to the official releases. We also compare with the previous published baseline on this dataset, which trains a Perceptron model with a simple and shallow feature set combined with clustering features based on unigram matching \cite{agerri2016robust}.
-
-Table \ref{tab:ner} reports the results of our comparison for NER using the usual conlleval script from the CoNLL NER shared tasks \footnote{\scriptsize{\url{https://www.clips.uantwerpen.be/conll2002/ner/}}}. We can see that the BMC-trained models improve over the official models distributed by FasText, Flair and mBERT, with a much larger margin than for POS tagging. It is also worth mentioning that there is a nice balance between the precision and the recall obtained by both Flair-BMC and BERT-BMC. Finally, we think that the larger differences in performance between NER and POS tagging might be partially due to the small size of the EIEC NER corpus. In any case, more experimentation is required to clarify the issue.
-
-%\todo[inline]{Basque ELMOk F1 82.02 lortzen du hemen merezi du gehitzea (CramemBERTen azaltzen da)?? https://github.com/stefan-it/plur}
-%\todo[inline]{Rodri: Ez dut uste jarri behar dugunik. Ez dago argitalpenik eta ez dakigu nola egin zituen entrenamenduak: parametroak, dev for training, etab. Adibidez bere mBERT emaitzak gureak baina baxuagoak dira. Gainera, flair-ekin entrenatu eta ebaluatu baditu modeloak, posible da F1 scores gaizki egotea, Flair-ek ez baitu ematen conll-en F1 score-a.}
-
-\section{Discussion}\label{sec:discussion}
-
 \begin{table*}[!t]
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lcccc} \hline
 \textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
- & {\textbf{Topic Classification}} & {\textbf{Polarity}} &  {\textbf{POS}} & {\textbf{NER}}\\ \hline
+ & {\textbf{Topic Classification}} & {\textbf{Sentiment}} &  {\textbf{POS}} & {\textbf{NER}}\\ \hline
 \multicolumn{5}{@{}l}{\textbf{Static Embeddings}} \\
 FastText-Wikipedia & 65.00 & 71.10 & 94.09 & 59.23 \\
 FastText-Common-Crawl & 28.82 & 66.16 & 91.95 & 55.53 \\
@@ -335,13 +326,29 @@ Flair-BMC  & 68.61 & 72.95 & 97.58 & 83.48 \\
 \multicolumn{5}{@{}l}{\textbf{BERT Language Models}}\\ \hline
 mBERT-official  & 68.42 & 71.02 & 96.26 & 79.43 \\
 BERT-BMC  & \textbf{76.77} & \textbf{78.10} & \textbf{97.68} & \textbf{87.61} \\ \hline
-\multicolumn{5}{@{}l}{\textbf{Previous state-of-the-art}} \\
- & 63.00 & 74.02 & 95.51 & 76.72 \\
+\textbf{Baselines} & 63.00 & 74.02 & 96.10 & 76.72 \\
 \hline
 \end{tabular}
 \caption{Summary table across all tasks. Micro F1 scores are reported.}\label{sec:results-discussion:table}
 \end{table*}
 
+As for previous tasks above, we compare our BMC-trained models (FastText, Flair and BERT) with respect to the official releases. We also compare with the previous published baseline on this dataset, which trains a Perceptron model with a simple and shallow feature set combined with clustering features based on unigram matching \cite{agerri2016robust}.
+
+Table \ref{tab:ner} reports the results of our comparison for NER using the usual conlleval script from the CoNLL NER shared tasks \footnote{\scriptsize{\url{https://www.clips.uantwerpen.be/conll2002/ner/}}}. We can see that the BMC-trained models improve over the official models distributed by FasText, Flair and mBERT, with a much larger margin than for POS tagging. It is also worth mentioning that there is a nice balance between the precision and the recall obtained by both Flair-BMC and BERT-BMC. Finally, we think that the larger differences in performance between NER and POS tagging might be partially due to the small size of the EIEC NER corpus. In any case, more experimentation is required to clarify the issue.
+
+%\todo[inline]{Basque ELMOk F1 82.02 lortzen du hemen merezi du gehitzea (CramemBERTen azaltzen da)?? https://github.com/stefan-it/plur}
+%\todo[inline]{Rodri: Ez dut uste jarri behar dugunik. Ez dago argitalpenik eta ez dakigu nola egin zituen entrenamenduak: parametroak, dev for training, etab. Adibidez bere mBERT emaitzak gureak baina baxuagoak dira. Gainera, flair-ekin entrenatu eta ebaluatu baditu modeloak, posible da F1 scores gaizki egotea, Flair-ek ez baitu ematen conll-en F1 score-a.}
+
+\section{Discussion}\label{sec:discussion}
+
+As illustrated by the overview of results provided by Table \ref{sec:results-discussion:table}, our BMC-trained models improve over previous work for all four tasks evaluated. This is true when we compare each model with their official counterpart, but also in absolute terms, where BERT-BMC outperforms every other model by a wide margin.
+
+We believe that the POS tagging results on UD 1.2 are especially interesting, given that previous work had already established a very competitive baseline \cite{heinzerling-strube-2019-sequence} and that our aim was to provide a head-to-head comparison between analogous models. For example, best performance with Flair is usually the result of combining Flair string contextual embeddings with static embeddings such as FastText \cite{akbik2018coling}, but our objective was not to optimize the experiments for best results but, rather, to compare with the Flair-official model for Basque. In the same way, when training BERT-BMC we strived to comply with the BERT architecture and parameters thus allowing a
+head-to-head comparison between them.
+
+Another interesting issue that arises by looking at the scores across tasks is the robust performance of the FastText-BMC embeddings. In fact, the FastText-BMC embeddings used to train the Flair document classifier outperform multilingual BERT for the Topic Detection and Sentiment Analysis tasks. Moreover, and unlike the FastText-official models, the results of FastText-BMC do not fluctuate as much, performing quite robustly across tasks. Finally, our Flair-BMC model outperforms both Flair-official and multilingual BERT in every setting, although it is far from the performance displayed by BERT-BMC.
+
+All these issues show the importance of carefully collecting a corpus to generate pre-trained language models specific to each language, especially for less-resourced ones which are usually under-represented in multilingual models. Finally, the good performance of BERT-BMC might indicate that generating a more language-specific tokenization impacts positively the performance of BERT (base) for different languages.
 
 \section{Conclusions and future work}\label{sec:concl-future-work}
 
