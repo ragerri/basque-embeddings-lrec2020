@@ -321,13 +321,11 @@ FastText-BMC  & 69.45 & 72.19 & 96.14 & 70.56 \\
 \hline%\hline
 \multicolumn{5}{@{}l}{\textbf{Flair Embeddings}}\\
 Flair-official & 65.25 & 72.74 & 97.50 & 80.82 \\
-Flair-BMC  & 68.61 & 72.95 & 97.58 & 83.48 \\
-%\hline
-\multicolumn{5}{@{}l}{\textbf{BERT Language Models}}\\ \hline
+Flair-BMC  & 68.61 & 72.95 & 97.58 & 83.48 \\ \hline
+\multicolumn{5}{@{}l}{\textbf{BERT Language Models}} \\
 mBERT-official  & 68.42 & 71.02 & 96.26 & 79.43 \\
 BERT-BMC  & \textbf{76.77} & \textbf{78.10} & \textbf{97.68} & \textbf{87.61} \\ \hline
-\textbf{Baselines} & 63.00 & 74.02 & 96.10 & 76.72 \\
-\hline
+\textbf{Baselines} & 63.00 & 74.02 & 96.10 & 76.72 \\ \hline
 \end{tabular}
 \caption{Summary table across all tasks. Micro F1 scores are reported.}\label{sec:results-discussion:table}
 \end{table*}
@@ -346,13 +344,13 @@ As illustrated by the overview of results provided by Table \ref{sec:results-dis
 We believe that the POS tagging results on UD 1.2 are especially interesting, given that previous work had already established a very competitive baseline \cite{heinzerling-strube-2019-sequence} and that our aim was to provide a head-to-head comparison between analogous models. For example, best performance with Flair is usually the result of combining Flair string contextual embeddings with static embeddings such as FastText \cite{akbik2018coling}, but our objective was not to optimize the experiments for best results but, rather, to compare with the Flair-official model for Basque. In the same way, when training BERT-BMC we strived to comply with the BERT architecture and parameters thus allowing a
 head-to-head comparison between them.
 
-Another interesting issue that arises by looking at the scores across tasks is the robust performance of the FastText-BMC embeddings. In fact, the FastText-BMC embeddings used to train the Flair document classifier outperform multilingual BERT for the Topic Detection and Sentiment Analysis tasks. Moreover, and unlike the FastText-official models, the results of FastText-BMC do not fluctuate as much, performing quite robustly across tasks. Finally, our Flair-BMC model outperforms both Flair-official and multilingual BERT in every setting, although it is far from the performance displayed by BERT-BMC.
+Another interesting issue that arises by looking at the scores across tasks is the robust performance of the FastText-BMC embeddings. In fact, the FastText-BMC embeddings used to train the Flair document classifier outperform multilingual BERT for the Topic Detection and Sentiment Analysis tasks. Moreover, and unlike the FastText-official models, the results of FastText-BMC do not fluctuate as much, performing quite robustly across tasks. Finally, our Flair-BMC model outperforms both Flair-official and multilingual BERT in every setting, although it remains far from the performance displayed by BERT-BMC.
 
-All these issues show the importance of carefully collecting a corpus to generate pre-trained language models specific to each language, especially for less-resourced ones which are usually under-represented in multilingual models. Finally, the good performance of BERT-BMC might indicate that generating a more language-specific tokenization impacts positively the performance of BERT (base) for different languages.
+All these issues show the importance of carefully collecting a corpus to generate pre-trained language models specific to each language, especially for less-resourced ones which are usually under-represented in large multilingual models. Finally, the good performance of BERT-BMC might indicate that generating a more language-specific tokenization has a positive impact.
 
 \section{Conclusions and future work}\label{sec:concl-future-work}
 
-In this paper we show that a number of Basque monolingual models trained on our own corpora produce much better results than publicly available versions in downstream NLP tasks. More specifically, we build monolingual word embeddings using Fastext, and pre-trained language models using Flair and BERT. All of them have been trained with the Basque Media Corpus (BMC), a 226M token corpus comprising Wikipedia and news outlets. The results on a broad range of NLP tasks, including topic classification, sentiment classification, PoS tagging and NER, show improvements in all cases with respect to third-party models. The best results in all cases are obtained with our BERT-BMC model, with up to 10 absolute point increases with regard to the use of the official multilingual BERT, setting a new state-of-the-art in all four tasks.
+In this paper we show that a number of Basque monolingual models trained on our own corpora produce much better results than publicly available versions in downstream NLP tasks. More specifically, we build monolingual word embeddings using FastText, and pre-trained language models using Flair and BERT. All of them have been trained with the Basque Media Corpus (BMC), a 226M token corpus comprising Wikipedia and news outlets. The results on a broad range of NLP tasks, including topic classification, sentiment classification, PoS tagging and NER, show improvements in all tasks with respect to third-party models. The best results in all cases are obtained with our BERT-BMC model, with up to 10 absolute point increases with regard to the use of the official multilingual BERT, setting a new state-of-the-art in all four tasks.
 
 In despite of this, it should be noted that our experiments have been performed training models which are analogous to the corresponding existing pre-trained models, instead of optimizing for best results in each of the tasks. This strategy allows to make a head-to-head comparison, and to conclude that the training corpus is key. Thus, in the case of BERT, training a monolingual model instead of a multilingual one shared with 102 other languages is also a key factor, so we can rule out that it is not changes in the models that cause the increased performance. In this sense, new variations of those models have reported better results \cite{liu2019roberta}. In the future, we plan to release models which try to keep up with the state-of-the-art results of the time.
 
