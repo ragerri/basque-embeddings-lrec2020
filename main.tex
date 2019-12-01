@@ -20,19 +20,21 @@
 % google doc: https://docs.google.com/document/d/1czT8UndVGbKUfSRZtaHVyWbpFcGSV33USwytefEv4jM/edit?usp=sharing
 
 
-\title{Build-your-own is better than public text representation models: \\ evidence for the Basque Language\\ (beste aukera: Give your text representation models some love: the case for a low-resource language like BasqueLanguage)}
+\title{Give your Text Representation Models some Love: the Case for Basque
+%Build-your-own is better than public text representation models: \\ evidence for the Basque Language\\
+}
 
 \name{Rodrigo Agerri$^{*1}$ , Iñaki San Vicente$^{*2}$ , Jon Ander Campos$^{*1}$ , Ander Barrena$^{*1}$,\\
         \large{\textbf{Xabier Saralegi$^2$ , Aitor Soroa$^1$ , Eneko Agirre$^1$ }}}
 
-\address{\\ IXA NLP Group, University of the Basque Country UPV/EHU$^1$ , Elhuyar Foundation$^2$  \\
+\address{\\ IXA Group, HiTZ Centre, University of the Basque Country UPV/EHU$^1$, Elhuyar Foundation$^2$  \\
          %Address1, Address2, Address3 \\
-         \{rodrigo.agerri, jonander.campos, ander.barrena,a.soroa,e.agirre \}@ehu.eus\\
+         \{rodrigo.agerri, jonander.campos, ander.barrena, a.soroa, e.agirre\}@ehu.eus\\
          \{i.sanvicente, x.saralegi\}@elhuyar.eus\\}
 
 
 \abstract{
-Word embeddings and pre-trained language models allow to build rich representations of text and have enabled improvements across most NLP tasks. Unfortunately they are very expensive to train, and many small companies and research groups tend to use models that have been pre-trained and made available by third parties, rather than building their own. This is suboptimal, as, for many languages, the models have been trained on smaller (or lower quality) corpora. In addition, pre-trained models for non-English languages are not always available. In the case of pre-trained language models only multilingual versions are available, where each language shares the quota of substrings and parameters with the rest of the languages. The case is worse for smaller languages, as for instance Basque. In this paper we show that a number of monolingual models (FastText word embeddings, FLAIR and BERT language models) trained with larger Basque corpora produce much better results than publicly available versions in downstream NLP tasks, including topic classification, sentiment classification, PoS tagging and NER. This work sets a new state-of-the-art in those tasks for Basque. All benchmarks and models used in this work are publicly available. 
+Word embeddings and pre-trained language models allow to build rich representations of text and have enabled improvements across most NLP tasks. Unfortunately they are very expensive to train, and many small companies and research groups tend to use models that have been pre-trained and made available by third parties, rather than building their own. This is suboptimal as, for many languages, the models have been trained on smaller (or lower quality) corpora. In addition, monolingual pre-trained models for non-English languages are not always available. At best, models for those languages are included in multilingual versions, where each language shares the quota of substrings and parameters with the rest of the languages. This is particularly true for smaller languages such as Basque. In this paper we show that a number of monolingual models (FastText word embeddings, FLAIR and BERT language models) trained with larger Basque corpora produce much better results than publicly available versions in downstream NLP tasks, including topic classification, sentiment classification, PoS tagging and NER. This work sets a new state-of-the-art in those tasks for Basque. All benchmarks and models used in this work are publicly available. 
 % Ondorio nagusiak:
 % Euskararako bert propioa > mbert publikoa eta euskararako fastext propioa > fastext publikoa eta flair propioa > flair publikoa
 % Atazak: topic class / polarity / ner / pos
@@ -48,51 +50,48 @@ Word embeddings and pre-trained language models allow to build rich representati
 
 \section{Introduction}\label{sec:introduction}
 
-Word embeddings and pre-trained language models allow to build rich representations of text and have enabled improvements across most NLP tasks. The most successful models include word embeddings like Fastext \cite{fasttext1_bojanowski2017enriching}, and, more recently, pre-trained language models which can be used to produce contextual embeddings or directly fine-tuned for each task. Good examples of the later are character-based models like Flair \cite{akbik2018coling} and masked language models like BERT \cite{devlin2019bert}. In many cases the teams that developed the algorithms also release their models, which facilitates reproducibility and downstream applications of their models. Given that the models are expensive to train, many companies and research groups tend to use those models, rather than building their own. This could be suboptimal, as, for many languages, the models have been trained on easily obtained public corpora, which tends to be smaller and/or lower quality that other existing corpora. In addition, pre-trained language models for non-English languages are not always available. In that case, only multilingual versions are available, where each language shares the quota of substrings and parameters with the rest of the languages, leading to a decrease in performance \cite{devlin2019bert}.  The chances for smaller languages, as for instance Basque, seem even direr, as easily available public corpora is very limited, and the quota of substrings depends on corpus size. 
+Word embeddings and pre-trained language models allow to build rich representations of text and have enabled improvements across most NLP tasks. The most successful models include word embeddings like Fastext \cite{fasttext1_bojanowski2017enriching}, and, more recently, pre-trained language models which can be used to produce contextual embeddings or directly fine-tuned for each task. Good examples of the later are character-based models like Flair \cite{akbik2018coling} and masked language models like BERT \cite{devlin2019bert}. In many cases the teams that developed the algorithms also release their models, which facilitates both reproducibility and their application in downstream tasks. Given that the models are expensive to train, many companies and research groups tend to use those models, rather than building their own. This could be suboptimal as, for many languages, the models have been trained on easily obtained public corpora, which tends to be smaller and/or of lower quality that other existing corpora. In addition, pre-trained language models for non-English languages are not always available. In that case, only multilingual versions are available, where each language shares the quota of substrings and parameters with the rest of the languages, leading to a decrease in performance \cite{devlin2019bert}.  The chances for smaller languages, as for instance Basque, seem even direr, as easily available public corpora is very limited, and the quota of substrings depends on corpus size.
 
-As an illustration of the issues mentioned above, the multilingual BERT which Basque shares with other 102 languages is based on Wikipedia corpora, where English amounts to 2,5 thousand million tokens and Basque amounts to 35 million tokens. Our corpus uses, in addition to the Basque Wikipedia, copora crawled from news outlets amounting 191M tokens. Regarding subword tokenization, some common Basque words as \texttt{etxerantz} (to the house) or \texttt{medikuarenera} (to the docto's) would be split as follows by the multilingual BERT and the monolingual BERT that we trained (respectively):
+As an illustration of the issues mentioned above, the multilingual BERT which Basque shares with other 102 languages is based on Wikipedia corpora, where English amounts to 2.5 thousand million tokens whereas for Basque it contains around 35 million tokens. Our corpus uses, in addition to the Basque Wikipedia, corpora crawled from news outlets (191M tokens). Another important issue is subword tokenization. Thus, for some common Basque words such as \texttt{etxerantz} (to the house) or \texttt{medikuarenera} (to the doctor), the subword tokenization generated by the monolingual BERT we trained will substantially differ from the output produced by the multilingual BERT:
 
 \begin{verbatim}
  mBERT: Et #xer #ant #z
  ours:  Etxera #ntz
 
- mBERT: Medi #kua #rene #ra   
- ours:  Mediku #aren #era     
+ mBERT: Medi #kua #rene #ra
+ ours:  Mediku #aren #era
 \end{verbatim}
 
-The mBERT subwords tend to be shorter and less interpretable, while our subwords are closer to linguistically interpretable strings, like \texttt{mediku} (doctor) \texttt{aren} ('s) and \texttt{era} (to the).
+More specifically, mBERT's subwords tend to be shorter and less interpretable, while our subwords are closer to linguistically interpretable strings, like \texttt{mediku} (doctor) \texttt{aren} ('s) and \texttt{era} (to the).
 
-Most of the time the released models have been thoroughly tested only in English. In some cases, multilingual versions have been tested in transfer learning scenarios for other languages, where they have not been compared to monolingual versions \cite{devlin2019bert}.  
-The goal of this paper is to compare publicly available models for Basque with analogous models which have been trained with a larger, better quality corpus. This has been possible for the Fastext and Flair models. In the case of BERT only the multilingual version for 102 languages is available for Basque . We focus on four downstream NLP tasks, namely, topic classification, sentiment classification, PoS tagging and NER.
+Furthermore, most of the time the released models have been thoroughly tested only in English. Alternatively, multilingual versions have been tested in transfer learning scenarios for other languages, where they have not been compared to monolingual versions \cite{devlin2019bert}.
+The goal of this paper is to compare publicly available models for Basque with analogous models which have been trained with a larger, better quality corpus. This has been possible for the Fastext and Flair models. In the case of BERT, only the multilingual version for 102 languages is available for Basque. We focus on four downstream NLP tasks, namely, topic classification, sentiment classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER).
 
-The main contribution of our work s twofold: (1) We show that, in the case of Basque, publicly available models can be outperformed by analogous models trained with appropriate corpora. (2) We make our models publicly available\footnote{Url to be included upon acceptance}. Our results show that this is indeed the case for Fastext and Flair models. In the case of BERT, we show that the monolingual Basque BERT outperforms the official multilingual BERT by a large margin, with up to 10 absolute point improvement. The increases are consistent for the three models in all four tasks. Our experiments have been performed training models which are analogous to the corresponding existing pre-trained models. This allows to make a head-to-head comparison, and to conclude that the training corpus is key. In the case of BERT, training a monolingual model instead of a multilingual one shared with 102 other languages is also a key factor, so we can rule out that it is not changes in the models that cause the increased performance. 
+The main contribution of our work is twofold: (1) We show that, in the case of Basque, publicly available models can be outperformed by analogous models trained with appropriate corpora. (2) We make our models publicly available\footnote{URL to be included upon acceptance}. Our results show that this is indeed the case for Fastext and Flair models. In the case of BERT, we show that the monolingual Basque BERT outperforms the official multilingual BERT by a large margin, with up to 10 absolute point improvement. The increases are consistent for the three models in all four tasks. Our experiments have been performed training models which are analogous to the corresponding existing pre-trained models. This allows to make a head-to-head comparison, and to conclude that the training corpus is key. In the case of BERT, training a monolingual model instead of a multilingual one shared with 102 other languages is also a key factor, so we can rule out that it is not any changes in the models the cause for the better performance.
 
-Although our results set a new state of the art for the fours tasks in Basque, our goal was not to train and use the systems in an optimal way. As mentioned before, we focused on head-to-head comparisons. In this sense, better results could be expected using variations of pre-trained models that have reported better results in English \cite{liu2019roberta}, or making an effort in developing better adaptations to each of the tasks.
-
+Although our results set a new state of the art for the four tasks, our goal was not to train and use the systems in the most optimal manner. Instead, and as mentioned before, we have focused on head-to-head comparisons. In this sense, better results could be expected using variations of pre-trained models that have reported better results for English \cite{liu2019roberta}, or making an effort in developing better adaptations to each of the tasks.
 
 %\todo[inline]{Rodri: SOTA results and BERT. Note that we did not look for best overall performance with Flair, just to compare with (official) publicly available models, as we say in last paragraph in section 3.3}
-
-
 
 \section{Related work}\label{sec:related-work}
 
 % embedding / bert / mbert
-\todo[inline]{related work aitor hasi. camembert aipatu? enekok uste du baietz}
+%\todo[inline]{related work aitor hasi. camembert aipatu? enekok uste du baietz}
 
-Deep learning methods in NLP rely on the ability to represent words as continuous vectors on a low dimensional space, called word embeddings. Word2vec~\cite{mikolov2013distributed} or GloVe~\cite{Pennington14glove:global} are among the best models that build word embeddings by analyzing co-occurrence patterns extracted from large corpora. FastText~\cite{fasttext1_bojanowski2017enriching} proposes an improvement over those models, consisting on embedding subword units, thereby attempting to introduce morphological information. Rich morphology languages such as Basque should especially profit from such word representation. The Facebook company distributes embeddings for more than 150 languages using the FasText algorithm trained on common crawl and  Wikipedia. In this paper we build FasText embeddings using a carefully collected corpus in Basque and show that it performs better than the officially distributed embeddings in all NLP we tested, which stresses the importance of a carefully design when building and collecting the corpus.
+Deep learning methods in NLP rely on the ability to represent words as continuous vectors on a low dimensional space, called word embeddings. Word2vec~\cite{mikolov2013distributed} or GloVe~\cite{Pennington14glove:global} are among the best models that build word embeddings by analyzing co-occurrence patterns extracted from large corpora. FastText~\cite{fasttext1_bojanowski2017enriching} proposes an improvement over those models, consisting on embedding subword units, thereby attempting to introduce morphological information. Rich morphology languages such as Basque should especially profit from such word representations. FastText distributes embeddings for more than 150 languages trained on Common Crawl and  Wikipedia. In this paper we build FasText embeddings using a carefully collected corpus in Basque and show that it performs better than the officially distributed embeddings in all NLP we tested, which stresses the importance of a following a carefully designed method when building and collecting the corpus.
 
-The aforementioned methods generate static word embeddings, that is, they provide a unique vector-based representation for a given word independently of the context in which the word occurs. Thus, if we consider the Basque word \emph{banku}\footnote{In English: bank.}, static word embedding approaches will calculate one vector irrespective of the fact that the same word \emph{banku} may convey different senses when used in different contexts, namely, ``financial institution'',``bench'', ``supply or stock'', among others. In order to address this problem, contextual word embeddings are proposed; the idea is to be able to generate different word representations according to the context in which the word appears. Examples of such contextual representations are ELMO \cite{Peters:2018} and Flair \cite{akbik2018coling}, which are built upon LSTM-based architectures and trained as language models. More recently, \newcite{devlin2019bert} presents BERT, a model based on the transformer architecture trained as a masked language model, which has attained very good results on a variety of NLP tasks. The multilingual counterpart of BERT, called mBERT, is a single language model pre-trained from corpora in more than 100 languages. mBERT enables to perform transfer knowledge techniques among languages, so that systems can be trained on datasets in languages other than that used to fine tune them~\cite{heinzerling-strube-2019-sequence,DBLP:conf/acl/PiresSG19}.
+The aforementioned methods generate static word embeddings, that is, they provide a unique vector-based representation for a given word independently of the context in which the word occurs. Thus, if we consider the Basque word \emph{banku}\footnote{In English: bank.}, static word embedding approaches will calculate one vector irrespective of the fact that the same word \emph{banku} may convey different senses when used in different contexts, namely, ``financial institution'',``bench'', ``supply or stock'', among others. In order to address this problem, contextual word embeddings are proposed; the idea is to be able to generate different word representations according to the context in which the word appears. Examples of such contextual representations are ELMO \cite{Peters:2018} and Flair \cite{akbik2018coling}, which are built upon LSTM-based architectures and trained as language models. More recently, \newcite{devlin2019bert} presents BERT, a model based on the transformer architecture trained as a masked language model, which has obtained very good results on a variety of NLP tasks. The multilingual counterpart of BERT, called mBERT, is a single language model pre-trained from corpora in more than 100 languages. mBERT enables to perform transfer knowledge techniques among languages, so that systems can be trained on datasets in languages different to the one used to fine tune them~\cite{heinzerling-strube-2019-sequence,DBLP:conf/acl/PiresSG19}.
 
-When pre-training mBERT the corpora sizes in different languages is very diverse, with English corpora being order of magnitudes larger than that of minority languages. The authors alleviate this issue by oversampling examples of lower resource languages, but note however that the parameters and vocabulary is shared across the languages. This means that each language has to share the quota of substrings and parameters with the rest of the languages. As shown in the introduction, this causes problems with the proper tokenization of some words in low resource languages. 
+When pre-training mBERT the corpora sizes in different languages is very diverse, with English corpora being order of magnitudes larger than that of the minority languages. The authors alleviate this issue by oversampling examples of lower resource languages. However, as the parameters and vocabulary is shared across the languages, this means that each language has to share the quota of substrings and parameters with the rest of the languages. As shown in the introduction, this causes tokenization problems for low resource languages.
 
-CamemBERT~\cite{martin2019camembert} is a recent effort to build custom pre-trained language model for French, using 138GB of text from a monolingual French corpus extracted from common crawl. The authors show that CamemBERT obtains significant improvements on many French tasks compared to the publicly available multilingual BERT. However, the architecture used in CamemBERT is different to BERT, which makes the comparison among the models difficult. In contrast, we try to mimic the BERT architecture and parameters when building out models, thus allowing a head-to-head comparison among them. 
+CamemBERT~\cite{martin2019camembert} is a recent effort to build custom RoBERTa \cite{liu2019roberta} pre-trained language models for French, using 138GB of text from a monolingual French corpus extracted from Common Crawl. The authors show that CamemBERT obtains significant improvements on many French tasks compared to the publicly available multilingual BERT. However, the architecture used in CamemBERT is different to BERT, which makes the comparison among the models less straightforward. In contrast, we try to mimic the BERT architecture and parameters when building our models, thus allowing a head-to-head comparison among them.
 
 \section{Building Basque models}\label{sec:build-basq-models}
 
 % - Collecting corpora: iñaki
-\subsection{Collecting Corpora}\label{sec:build-basq-models:corpora}
+%\subsection{Collecting Corpora}\label{sec:build-basq-models:corpora}
 
-In order to train accurately word embeddings and language models we need a corpus as large as possible, but also meeting certain criteria. Those criteria included clean and correctly structured text (having paragraph and document limits, specially relevant for training BERT language models). With that aim, we collected a corpus in Basque comprising news articles from online newspapers and the Basque Wikipedia\footnote{The dump from 2019/10/01 was used.}. In total the collected corpus contains 226 million tokens, with 35 millions coming from Wikipedia. We will refer to this corpus as Basque Media Corpus (BMC).
+In order to train accurately word embeddings and language models we need a corpus as large as possible, but also meeting certain criteria. Those criteria included clean and correctly structured text (having paragraph and document limits, specially relevant for training BERT language models). With that aim, we collected a corpus in Basque comprising news articles from online newspapers and the Basque Wikipedia\footnote{The dump from 2019/10/01 was used.}. In total the collected corpus contains 226 million tokens, of which 35 million come from the Wikipedia. Henceforth, we will refer to this corpus as Basque Media Corpus (BMC).
 
 % \todo[inline]{Egia da common crawl zaratatsua dela?}
 
@@ -101,13 +100,13 @@ In order to train accurately word embeddings and language models we need a corpu
 % - fastext iñaki/xabier
 \subsection{Static Embeddings: FastText}\label{sec:build-basq-models:static}
 
-To the best of our knowledge, the only publicly available static word embeddings for Basque are those distributed by Facebook and learned using an approach based on the skipgram model, where  each  word  is  represented as a bag of character n-grams \cite{fasttext1_bojanowski2017enriching}. The approach is implemented in the FastText library\footnote{https://fasttext.cc/}, and different pretrained word vectors are available (both having 300 dimensions):
+To the best of our knowledge, the only publicly available static word embeddings for Basque are those distributed by Facebook and learned using an approach based on the skipgram model, where  each  word  is  represented as a bag of character n-grams \cite{fasttext1_bojanowski2017enriching}. The approach is implemented in the FastText library\footnote{https://fasttext.cc/}, and two types of pre-trained word vectors are available (based on 300 dimensions):
 
 \textbf{Wiki word vectors} (FastText-official-wikipedia) were trained on Wikipedia using the skip-gram model described in \cite{fasttext1_bojanowski2017enriching} with default parameters (a window size of 5, 3-6 length character n-grams and 5 negatives).
 
-\textbf{Common Crawl word vectors} (FastText-official-common-crawl) were trained on common crawl and wikipedia using CBOW with position-weights, with character n-grams of length 5, a window of size 5 and 10 negatives .  \cite{fasttext2_grave2018learning}
+\textbf{Common Crawl word vectors} (FastText-official-common-crawl) were trained on Common Crawl and Wikipedia using CBOW with position-weights, with character n-grams of length 5, a window size 5 and 10 negatives\cite{fasttext2_grave2018learning}.
 
-\textbf{BMC word vectors} (FastText-BMC) were trained on the BMC corpus described above, using CBOW with position-weights, but with the default parameters of the original paper \cite{fasttext1_bojanowski2017enriching}.
+\textbf{BMC word vectors} (FastText-BMC) were trained on the BMC corpus described above, using CBOW with position-weights and the default parameters of the original paper \cite{fasttext1_bojanowski2017enriching}.
 
 % - Flair rodri
 \subsection{Contextual String Embeddings: Flair}\label{sec:build-basq-models:flair}
@@ -121,12 +120,12 @@ Flair refers to both a deep learning system and to a specific type of character-
 
 \paragraph{Pooled Contextualized Embeddings:} Flair embeddings, however, struggle to generate an appropriate word representation for words in underspecified contexts, namely, in sentences in which, for example, local information is not sufficient to know the named entity type of a given word. In order to address this issue a variant of the original Flair embeddings is proposed: ``Pooled Contextualized Embeddings'' \cite{akbik2019naacl}. In this approach, every contextualized embedding is kept into a \emph{memory} which is later used in a pooling operation to obtain a global word representation consisting of the concatenation of all the local contextualized embeddings obtained for a given word. They reported significant improvements for NER by using this new version of Flair embeddings. Note that this does not affect to the way the Flair pre-trained embedding models are calculated. The pooling operation is involved in the process of using such pre-trained models in order to obtain word representations for a given task such as NER or POS using the Flair system.
 
-\paragraph{Flair System:} For sequence labeling tasks, the calculated word embeddings are passed into the BiLSTM-CRF architecture (Flair system) proposed by \cite{huang2015bidirectional}. For text classification tasks, the computed word embeddings are fed into a BILSTM\footnote{A single layer of size 128 was used, with word reprojection and a dropout value of 0.3068} to produce a Document level embedding which is then used in a linear layer to make the class prediction. Although for best results they recommend to stack their own Flair embeddings with additional static embeddings such as FastText, in this paper our objective is to compare the official pre-trained Flair embeddings for Basque with our own Flair-BMC embeddings. 
+\paragraph{Flair System:} For sequence labeling tasks, the calculated word embeddings are passed into the BiLSTM-CRF architecture (Flair system) proposed by \cite{huang2015bidirectional}. For text classification tasks, the computed word embeddings are fed into a BILSTM\footnote{A single layer of size 128 was used, with word reprojection and a dropout value of 0.3068.} to produce a document level embedding which is then used in a linear layer to make the class prediction. Although for best results they recommend to stack their own Flair embeddings with additional static embeddings such as FastText, in this paper our objective is to compare the official pre-trained Flair embeddings for Basque with our own Flair-BMC embeddings.
 
 % - Bert ander/jon ander
 \subsection{BERT language models}\label{sec:build-basq-models:bert}
 
-We have trained a BERT \cite{devlin2019bert} model for Basque Language using the BMC corpus motivated by the low representation this language has in the original multilingual BERT model. In this section we describe the methods used for creating the vocabulary, the model architecture, the pre-training objective and procedure.
+We have trained a BERT \cite{devlin2019bert} model for Basque Language using the BMC corpus motivated by the rather low representation this language has in the original multilingual BERT model. In this section we describe the methods used for creating the vocabulary, the model architecture, the pre-training objective and procedure.
 
 The main differences between our model and the original implementation are the corpus used for the pre-training, the algorithm for sub-word vocabulary creation and the usage of a different masking strategy that is not available for the BERT\textsubscript{BASE} model yet.
 
@@ -140,7 +139,7 @@ In the same way as the original BERT architecture proposed by \newcite{devlin201
 
 \paragraph{Pre-training objective}
 
-Following BERT original implementation, we train our model on the Masked Language Model (MLM) and Next Sentence Prediction (NSP) tasks. Even if the necessity of the NSP task has been questioned by some recent works \cite{yang2019xlnet,liu2019roberta,lample2019cross} we have decided to keep it as in the original paper to allow for head-to-head comparison. For the MLM, given an input sequence composed of N tokens $x_1, x_2, ..., x_n$ we select a $15\%$ of them as masking candidates. Then, from this selected tokens a $80\%$ are masked by replacing them with the [MASK] token, a $10\%$ are replaced with a random word of the vocabulary and the remaining $10\%$ are left unchanged. In order to create input examples for the NSP task, we take two segments $A$ and $B$ from the training corpus, where $B$ is the true next segment for $A$ only in a $50\%$ of the cases, in the rest of the cases, $B$ is just a random segment from the corpus. At the end, the model is trained to optimize the sum of the means of the MLM and NSP likelihoods.
+Following BERT original implementation, we train our model on the Masked Language Model (MLM) and Next Sentence Prediction (NSP) tasks. Even if the necessity of the NSP task has been questioned by some recent works \cite{yang2019xlnet,liu2019roberta,lample2019cross} we have decided to keep it as in the original paper to allow for head-to-head comparison. For the MLM, given an input sequence composed of N tokens $x_1, x_2, ..., x_n$ we select a $15\%$ of them as masking candidates. Then, $80\%$ of these selected tokens are masked by replacing them with the [MASK] token, $10\%$ are replaced with a random word of the vocabulary and the remaining $10\%$ are left unchanged. In order to create input examples for the NSP task, we take two segments, $A$ and $B$, from the training corpus, where $B$ is the true next segment for $A$ only for $50\%$ of the cases. For the rest, $B$ is just a random segment from the corpus. At the end, the model is trained to optimize the sum of the means of the MLM and NSP likelihoods.
 
 As our vocabulary consists of sub-word units, we use whole-word masking (WWM), that applies the masking to whole words instead of sub-word units. This new masking strategy makes the MLM task more difficult for the system as it has to predict the whole word instead of predicting just part of it. An upgraded version of BERT\textsubscript{LARGE}\footnote{\scriptsize{\url{https://github.com/google-research/bert}}} has proven that WWM has substantial benefits in comparison with previous masking that was done after the sub-word tokenization.
 
@@ -148,7 +147,7 @@ As our vocabulary consists of sub-word units, we use whole-word masking (WWM), t
 
 Similar to \cite{devlin2019bert} we use Adam with learning rate of $1e-4$, $\beta_1=0.9$, $\beta_2=0.999$, L2 weight decay of $0.01$, learning rate warmup over the first $10,0000$ steps, and linear decay of the learning rate. The dropout probability is fixed to $0.1$ on all the layers.
 
-As the attentions is quadratic to the sequence length, making longer sequences much more expensive, we pre-train the model with sequence length of $128$ for $90\%$ of the steps and sequence length of $512$ for $10\%$ of the steps. In total we train for $1,000,000$ steps and a batch size of $256$. The first $90\%$ steps are trained using Cloud v2 TPUs and for the rest of the steps we use Cloud v3 TPUs \footnote{\scriptsize{\url{https://cloud.google.com/tpu/pricing}}}.
+As the attentions are quadratic to the sequence length, making longer sequences much more expensive, we pre-train the model with sequence length of $128$ for $90\%$ of the steps and sequence length of $512$ for $10\%$ of the steps. In total we train for $1,000,000$ steps and a batch size of $256$. The first $90\%$ steps are trained using Cloud v2 TPUs and for the rest of the steps we use Cloud v3 TPUs \footnote{\scriptsize{\url{https://cloud.google.com/tpu/pricing}}}.
 
 % - Text classification models iñaki/xabier
 % - Sequence labeling models iñaki/rodri/jon ander
@@ -156,9 +155,9 @@ As the attentions is quadratic to the sequence length, making longer sequences m
 \section{Evaluation and Results}\label{sec:eval-results}
 %\todo[inline]{iñaki: izena aldatu diot honi, Discussion atal bat dagoelako dagoeneko gero}
 
-\todo[inline]{(eneko) Atal hau homogeneizatu beharra dago, ataza bakoitzean sistema bakoitza nola aplikatu den azalduaz. Lehen paragrafoa nahiko konfusoa dago, igual nahikoa da sarrera motz bat egitea, aplikatu ditugun ereduen zerrenda gogoratuz, eta detaileak atal bakoitzean emanaz (flair pooling adibidez).}
+%\todo[inline]{(eneko) Atal hau homogeneizatu beharra dago, ataza bakoitzean sistema bakoitza nola aplikatu den azalduaz. Lehen paragrafoa nahiko konfusoa dago, igual nahikoa da sarrera motz bat egitea, aplikatu ditugun ereduen zerrenda gogoratuz, eta detaileak atal bakoitzean emanaz (flair pooling adibidez).}
 
-\todo[inline]{(eneko) Eredu guztiak dira publikoki atzigarriak? hala bada url-ak eman. Hala ez bada, camera ready-rako publiko jartzea posible da? edozein kasutan abstract/sarrera/ondorioetan esaten dena berridatzi beharrezkoa bada. }
+%\todo[inline]{(eneko) Eredu guztiak dira publikoki atzigarriak? hala bada url-ak eman. Hala ez bada, camera ready-rako publiko jartzea posible da? edozein kasutan abstract/sarrera/ondorioetan esaten dena berridatzi beharrezkoa bada. }
 
 %nomenclatura: \begin{itemize}
 %    \item FastText-official-wikipedia
@@ -182,26 +181,32 @@ As the attentions is quadratic to the sequence length, making longer sequences m
 
 We conduct an extensive evaluation on four well known NLP tasks: Topic Classification, Sentiment Classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER). The datasets used for each task are described in their respective sections.
 
-We train our systems to perform the following comparisons: (i) FastText official models (Wikipedia and Common Crawl) vs FastText-BMC model; (ii) the official Flair embedding models vs our Flair-BMC model. We use the parameters specified in \cite{akbik2019naacl} for Pooled Contextual Embeddings. The system is tuned on the development data using the test only for the final evaluation. We do not use the development set for training. For comparison between BERT models, we fine-tune on this data with both the official multilingual BERT \cite{devlin2019bert} model and with our BERT-BMC trained as described in Section.  \ref{sec:build-basq-models:bert}. Every reported result for every system is the average of five randomly initialized runs.
+We train our systems to perform the following comparisons: (i) FastText official models (Wikipedia and Common Crawl) vs FastText-BMC model; (ii) the official Flair embedding models vs our Flair-BMC model and, (iii) BERT-BMC with respect to multilingual BERT.
+
+To train the Flair system we use the parameters specified in \cite{akbik2019naacl} for Pooled Contextual Embeddings. Flair is tuned on the development data using the test only for the final evaluation. We do not use the development set for training.
+
+For comparison between BERT models we fine-tune on the training data provided for each of the four tasks with both the official multilingual BERT \cite{devlin2019bert} model and with our BERT-BMC model (trained as described in Section \ref{sec:build-basq-models:bert}).
+
+Every reported result for every system is the average of five randomly initialized runs.
 
 % - Topic classification xabier
 \subsection{Topic classification}\label{sec:topic}
 
 For the task of topic classification a dataset containing 12k news headlines (brief article descriptions) was compiled from the Basque weekly newspaper Argia\footnote{https://www.argia.eus}. News are classified uniquely according to twelve thematic categories. The dataset was divided into train (70\%), development (15\%) and test datasets (15\%). The Basque Headlines Topic Classification (BHTC) dataset is publicly available under cc license\footnote{\url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/BHTC.tgz}} 
 
-Fasttext and Flair related experiments were conducted using the Flair text classifier with the same hyperparameter setting\footnote{max-epocsh 50, learning rate 0.1, minibatch size 64, and  patience 3 }. Bert fine-tuning was done for 3 epochs with a learning rate of 2e-5 and a batch size of 16.
+The FastText and Flair related experiments were conducted using the Flair text classifier with the same hyperparameter setting\footnote{max-epoch 50, learning rate 0.1, minibatch size 64, and  patience 3 }. BERT-BMC and mBERT fine-tuning was performed over 3 epochs with a learning rate of 2e-5 and a batch size of 16.
 
 \begin{table}[!ht]\small
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
 %\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
- {\textbf{}} & {\textbf{micro F1}} &  {\textbf{Macro F1}} \\ \hline
+ {\textbf{}} & {\textbf{Micro F1}} &  {\textbf{Macro F1}} \\ \hline
 \textbf{Static Embeddings} & & \\
 FastText-Wikipedia & 65.00 & 54.98 \\
 FastText-Common-Crawl & 28.82 & 3.73  \\
 FastText-BMC  & 69.45 & 60.14 \\
 \hline%\hline
-\textbf{FlairEmbeddings}\\
+\textbf{Flair Embeddings}\\
 Flair-official & 65.25 & 55.83 \\
 Flair-BMC  & 68.61 & 59.38  \\ \hline
 \textbf{BERT Language Models}\\
@@ -215,14 +220,14 @@ TF-IDF Logistic Regression & 63.00 & 49.00 \\
 \caption{Basque topic classification results on Argia corpus.}\label{tab:topic}
 \end{table}
 
-Table \ref{tab:topic} shows the results obtained by the different models. Firstly, it can been that every BMC-trained model outperforms its official counterpart for all the three settings, by at least 4\% in all cases, for both micro and macro f1-scores. The results obtained by BERT-BMC are specially remarkable. The results show the effectiveness of developing your own models for your own language.
+Table \ref{tab:topic} shows the results obtained by the different models. Firstly, it can been that every BMC-trained model outperforms its official counterpart for all the three settings, by at least 4\% in all cases, for both micro and macro f1-scores. Best results are obtained by BERT-BMC. For each type of embedding or language models, the results show the effectiveness of developing your own models for your own language.
 
 % - Polarity iñaki
 \subsection{Sentiment classification}\label{sec:polarity}
 
-For sentiment classification a corpus of tweets containing messages related to the cultural domain was used\footnote{Dataset publicly available at \scriptsize{\url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}}. The corpus contains three class annotations (positive, negative and neutral), and a total of 2,936 examples. For the experiments in this paper the corpus was divided into train (80\%), test(10\%) and development(10\%) sets. Class distribution for the corpus is 32\% positive, 54\% neutral and 14\% negative.
+Sentiment classification is evaluated using a corpus of tweets containing messages related to the cultural domain\footnote{Dataset publicly available at \scriptsize{\url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}}. The corpus annotations for three classes (positive, negative and neutral), and a total of 2,936 examples. For the experiments in this paper the corpus was divided into train (80\%), test(10\%) and development(10\%) sets. Class distribution corresponds to 32\% positive, 54\% neutral and 14\% negative.
 
-As for the topic classification task, Fasttext and Flair related experiments were conducted using the Flair text classifier with the same hyperparameter settings\footnote{max-epochs 50, learning rate 0.1, mini-batch size 64, and patience 3}. Bert fine-tuning was done for 3 epochs  with a learning rate of 2e-5 and a batch size of 16.
+For FastText and Flair experiments we used the Flair text classifier with the same hyperparameter settings as those used for Topic Detection in Section \ref{sec:topic}. This is also the case for BERT-BMC and mBERT: fine-tuning over 3 epochs with a learning rate of 2e-5 and a batch size of 16.
 
 \begin{table}[!ht]\small
 \centering
@@ -241,19 +246,21 @@ Flair-BMC  & 72.95	& 69.05 \\ \hline
 mBERT-official  & 71.02 & 66.02 \\
 BERT-BMC  & \textbf{78.10}	& \textbf{76.14} \\
 \hline
-\multicolumn{3}{@{}l}{\scriptsize{\textbf{Previous state-of-the-art}}} \\ \hline
+\textbf{Baseline} \\
 SVM \cite{san2019multilingual} & 74.02 & 69.87\\ \hline
 \end{tabular}
 \caption{Basque sentiment classification task on Behagune tweet corpus.}\label{tab:sentiment}
 \end{table}
 
-Table \ref{tab:sentiment} shows the results obtained by the different models. Again, it can be seen that every BMC-trained model outperforms its official counterpart for all the three settings. The difference between Flair-official and Flair-BMC is rather small in terms of micro f1-score, but Flair-BMC obtains a higher macro-f1. Secondly, BERT-BMC establishes a new state-of-the-art on this particular dataset, improving the result in \cite{san2019multilingual} by 4.08\% and 6.27\% in terms of micro f1-score and macro f1-score, respectively. BERT-BMC specially improves classification of positive and negative classes, which gives him a boost in terms of macro f1. In any case, the results show the effectiveness of developing your own models for your own language
+Table \ref{tab:sentiment} shows that every BMC-trained model outperforms its official counterpart for all the three settings. The difference between Flair-official and Flair-BMC is rather small in terms of micro F1-score, but Flair-BMC obtains a higher macro F1. Furthermore, BERT-BMC establishes a new state-of-the-art on this particular dataset, improving previous results \cite{san2019multilingual} by 4.08 points in micro F1 score, and 6.27 in macro F1 score. BERT-BMC specially improves classification of the positive and negative classes, which provides a boost in terms of macro F1.
 % - PoS tagging rodri/iñaki
 % - NERC rodri
 
 \subsection{POS Tagging}\label{sec:pos-tagging}
 
-In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. The Basque UD treebank \cite{aranzabe2015automatic} is based on a conversion from part of the Basque Dependency Treebank (BDT) \cite{aduriz2003construction}. The treebank consists of 5274 sentences (60563 tokens) and covers mainly literary and journalistic texts. The most significant published work on this dataset is that of \cite{plank-etal-2016-multilingual}. They propose FREQBIN, a multi-task bi-LSTM system that predicts, at each step, both the tag and the log frequency class for the next token in the sequence. The intuition for the frequency to affect the final prediction by encouraging the model not to share representations between common and rare words.
+In order to facilitate comparison with previous state-of-the-art methods, we experiment with the Universal Dependencies 1.2 data, which provides train, development and test partitions. The Basque UD treebank \cite{aranzabe2015automatic} is based on a conversion from part of the Basque Dependency Treebank (BDT) \cite{aduriz2003construction}. The treebank consists of 5274 sentences (60563 tokens) and covers mainly literary and journalistic texts. Previous best result for this dataset in Basque has been reported by \cite{heinzerling-strube-2019-sequence}. They use Byte Pair Embeddings (BPEmb) which are trained on subword-segmented text. The segmentation of the text is obtained by using the Byte Pair Encoding (BPE) unsupervised algorithm, which iteratively merges frequent pairs of adjacent symbols into new ones. The BPEmbeddings are then fed into a LSTM sequence tagging architecture.
+
+%The most significant published work on this dataset is that of \cite{plank-etal-2016-multilingual}. They propose FREQBIN, a multi-task bi-LSTM system that predicts, at each step, both the tag and the log frequency class for the next token in the sequence. The intuition for the frequency to affect the final prediction by encouraging the model not to share representations between common and rare words.
 
 \begin{table}[!ht]\footnotesize
 \centering
@@ -270,16 +277,16 @@ Flair-BMC  &  97.58 \\ \hline
 mBERT-official &  96.26 \\
 BERT-BMC & \textbf{97.68} \\ \hline
 \textbf{Baseline} \\
-\cite{plank-etal-2016-multilingual} & 95.51 \\ \hline
+\cite{heinzerling-strube-2019-sequence} & 96.10 \\ \hline
 \end{tabular}
 \caption{Basque POS tagging results on UD 1.2.}\label{tab:pos}
 \end{table}
 
-Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can be seen that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{plank-etal-2016-multilingual}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the difference in performance obtained by BERT-BMC with respect to mBERT-official.
+Table \ref{tab:pos} shows the results obtained by the different models. Firstly, it can be seen that every BMC-trained model outperforms its official counterpart for all the three settings, albeit the difference between Flair-official and Flair-BMC is rather small. Secondly, our BMC-models (both BERT and Flair) establish a new state-of-the-art on this particular dataset significantly improving over the result reported by \cite{heinzerling-strube-2019-sequence}. In any case, the results show the effectiveness of developing your own models for your own language. This is especially supported by the difference in performance obtained by BERT-BMC with respect to mBERT-official.
 
 \subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
 
-The only gold standard corpus for NER in Basque is EIEC\footnote{\scriptsize{\url{http://ixa2.si.ehu.eus/eiec/eiec_v1.0.tgz}}} \cite{alegria2006lessons}. The corpus contains 44K tokens for training (3817 unique entities) and 15K for testing (931 entities). Although EIEC is annotated with four entity types (Location, Person, Organization and Miscellaneous), the \emph{Miscellaneous} class is rather sparse, occurring only in a proportion of 1 to 10 with respect to the other three classes. Thus, in the training data there are 156 entities annotated as \emph{Miscellaneous} whereas for each of the other three classes it contains around 1200 entities.
+EIEC\footnote{\scriptsize{\url{http://ixa2.si.ehu.eus/eiec/eiec_v1.0.tgz}}} is a gold standard corpus for NER in Basque \cite{alegria2006lessons}. The corpus contains 44K tokens for training (3817 unique entities) and 15K for testing (931 entities). Although EIEC is annotated with four entity types (Location, Person, Organization and Miscellaneous), the \emph{Miscellaneous} class is rather sparse, occurring only in a proportion of 1 to 10 with respect to the other three classes. Thus, in the training data there are 156 entities annotated as \emph{Miscellaneous} whereas for each of the other three classes it contains around 1200 entities.
 
 \begin{table}[!ht]\footnotesize
 \centering
@@ -306,9 +313,8 @@ As for previous tasks above, we compare our BMC-trained models (FastText, Flair 
 
 Table \ref{tab:ner} reports the results of our comparison for NER using the usual conlleval script from the CoNLL NER shared tasks \footnote{\scriptsize{\url{https://www.clips.uantwerpen.be/conll2002/ner/}}}. We can see that the BMC-trained models improve over the official models distributed by FasText, Flair and mBERT, with a much larger margin than for POS tagging. It is also worth mentioning that there is a nice balance between the precision and the recall obtained by both Flair-BMC and BERT-BMC. Finally, we think that the larger differences in performance between NER and POS tagging might be partially due to the small size of the EIEC NER corpus. In any case, more experimentation is required to clarify the issue.
 
-\todo[inline]{Basque ELMOk F1 82.02 lortzen du hemen merezi du gehitzea (CramemBERTen azaltzen da)?? https://github.com/stefan-it/plur}
-\todo[inline]{Rodri: Ez dut uste jarri behar dugunik. Ez dago argitalpenik eta ez dakigu nola egin zituen entrenamenduak: parametroak, dev for training, etab. Adibidez bere mBERT emaitzak gureak baina baxuagoak dira. Gainera, flair-ekin entrenatu eta ebaluatu baditu modeloak, posible da F1 scores gaizki egotea, Flair-ek ez baitu ematen conll-en F1 score-a.}
-
+%\todo[inline]{Basque ELMOk F1 82.02 lortzen du hemen merezi du gehitzea (CramemBERTen azaltzen da)?? https://github.com/stefan-it/plur}
+%\todo[inline]{Rodri: Ez dut uste jarri behar dugunik. Ez dago argitalpenik eta ez dakigu nola egin zituen entrenamenduak: parametroak, dev for training, etab. Adibidez bere mBERT emaitzak gureak baina baxuagoak dira. Gainera, flair-ekin entrenatu eta ebaluatu baditu modeloak, posible da F1 scores gaizki egotea, Flair-ek ez baitu ematen conll-en F1 score-a.}
 
 \section{Discussion}\label{sec:discussion}
 
@@ -336,18 +342,16 @@ BERT-BMC  & \textbf{76.77} & \textbf{78.10} & \textbf{97.68} & \textbf{87.61} \\
 \caption{Summary table across all tasks. Micro F1 scores are reported.}\label{sec:results-discussion:table}
 \end{table*}
 
-\todo[inline]{discussion over summary table}
-% - discussion
-
-
 
 \section{Conclusions and future work}\label{sec:concl-future-work}
 
-In this paper we show that a number of Basque monolingual models trained on our own corpora produce much better results than publicly available versions in downstream NLP tasks. More specifically, we build monolingual word embeddings using Fastext, and pre-trained language models using Flair and BERT. All of them have been trained on a 226M token corpus comprising Wikipedia and news outlets. The results on a broad range of NLP tasks, including topic classification, sentiment classification, PoS tagging and NERC, show improvements in all cases with respect to third-party models. The best results in all cases are obtained with our BERT model, with up to 10 absolute point increases with regard to the use of the official multilingual BERT, and set a new state-of-the-art in all four tasks. Our results for Basque seem to indicate that, specially in the case of small languages, it is crucial to devote the necessary resources to gather large high-quality corpora and to train monolingual models on those corpora. 
+In this paper we show that a number of Basque monolingual models trained on our own corpora produce much better results than publicly available versions in downstream NLP tasks. More specifically, we build monolingual word embeddings using Fastext, and pre-trained language models using Flair and BERT. All of them have been trained with the Basque Media Corpus (BMC), a 226M token corpus comprising Wikipedia and news outlets. The results on a broad range of NLP tasks, including topic classification, sentiment classification, PoS tagging and NER, show improvements in all cases with respect to third-party models. The best results in all cases are obtained with our BERT-BMC model, with up to 10 absolute point increases with regard to the use of the official multilingual BERT, setting a new state-of-the-art in all four tasks.
 
-Our experiments have been performed training models which are analogous to the corresponding existing pre-trained models. This allows to make a head-to-head comparison, and to conclude that the training corpus is key. In the case of BERT, training a monolingual model instead of a multilingual one shared with 102 other languages is also a key factor, so we can rule out that it is not changes in the models that cause the increased performance. In some cases, new variations of those models have reported better results \cite{liu2019roberta}. In the future, we plan to release models which try to keep up with the state-of-the-art results of the time.   
+In despite of this, it should be noted that our experiments have been performed training models which are analogous to the corresponding existing pre-trained models, instead of optimizing for best results in each of the tasks. This strategy allows to make a head-to-head comparison, and to conclude that the training corpus is key. Thus, in the case of BERT, training a monolingual model instead of a multilingual one shared with 102 other languages is also a key factor, so we can rule out that it is not changes in the models that cause the increased performance. In this sense, new variations of those models have reported better results \cite{liu2019roberta}. In the future, we plan to release models which try to keep up with the state-of-the-art results of the time.
 
-In order to facilitate reproducibility all benchmarks and models used in this work are publicly available. We also hope that these models will serve to improve the results of NLP applications for Basque, both at research centers and industry. 
+Our results for Basque seem to indicate that, specially in the case of small languages, it is crucial to devote the necessary resources to gather large high-quality corpora and to train monolingual models on those corpora.
+
+In order to facilitate reproducibility all benchmarks and models used in this work are publicly available. We also hope that these models will serve to improve the results of NLP applications for Basque, both at research centres and industry.
 
 
 % Ondorio nagusiak:
