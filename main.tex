@@ -4,6 +4,7 @@
 %\newcites{languageresource}{Language Resources}
 \usepackage{graphicx}
 \usepackage{tabularx}
+\usepackage{listings}
 \usepackage{soul}
 \usepackage{amsmath}
 \usepackage{todonotes}
@@ -38,10 +39,10 @@
 \abstract{
 Word embeddings and pre-trained language models allow to build rich representations of text and have enabled improvements across most NLP tasks. Unfortunately they are very expensive to train, and many small companies and research groups tend to use models that have been pre-trained and made available by third parties, rather than building their own. This is suboptimal as, for many languages, the models have been trained on smaller (or lower quality) corpora. In addition, monolingual pre-trained models for non-English languages are not always available. At best, models for those languages are included in multilingual versions, where each language shares the quota of substrings and parameters with the rest of the languages. This is particularly true for smaller languages such as Basque. In this paper we show that a number of monolingual models (FastText word embeddings, FLAIR and BERT language models) trained with larger Basque corpora produce much better results than publicly available versions in downstream NLP tasks, including topic classification, sentiment classification, PoS tagging and NER. This work sets a new state-of-the-art in those tasks for Basque. All benchmarks and models used in this work are publicly available.
 % Ondorio nagusiak:
-% Euskararako bert propioa > mbert publikoa eta euskararako fastext propioa > fastext publikoa eta flair propioa > flair publikoa
+% Euskararako bert propioa > mbert publikoa eta euskararako FastText propioa > FastText publikoa eta flair propioa > flair publikoa
 % Atazak: topic class / polarity / ner / pos
 % Artearen egoera ataza guztietan (konprobatu bakoitzak berea)
-% Euskaraz: bert > flair > fastext (ñabardurekin idatzi)
+% Euskaraz: bert > flair > FastText (ñabardurekin idatzi)
 % Embedding-ak eta ereduak banatuko ditugu
 % Honek ñabardura gehitzen dio alemanari (japonesa?) buruzko lanari (jon ander) \\ \newline \Keywords{keyword1, keyword2, keyword3}
 \\ \newline \Keywords{Neural language representation models, Information Extraction, Less-resourced languages}
@@ -53,7 +54,7 @@ Word embeddings and pre-trained language models allow to build rich representati
 
 \section{Introduction}\label{sec:introduction}
 
-Word embeddings and pre-trained language models allow to build rich representations of text and have enabled improvements across most NLP tasks. The most successful models include word embeddings like Fastext \cite{fasttext1_bojanowski2017enriching}, and, more recently, pre-trained language models which can be used to produce contextual embeddings or directly fine-tuned for each task. Good examples of the later are character-based models like Flair \cite{akbik2018coling} and masked language models like BERT \cite{devlin2019bert}. In many cases the teams that developed the algorithms also release their models, which facilitates both reproducibility and their application in downstream tasks. Given that the models are expensive to train, many companies and research groups tend to use those models, rather than building their own. This could be suboptimal as, for many languages, the models have been trained on easily obtained public corpora, which tends to be smaller and/or of lower quality that other existing corpora. In addition, pre-trained language models for non-English languages are not always available. In that case, only multilingual versions are available, where each language shares the quota of substrings and parameters with the rest of the languages, leading to a decrease in performance \cite{devlin2019bert}.  The chances for smaller languages, as for instance Basque, seem even direr, as easily available public corpora is very limited, and the quota of substrings depends on corpus size.
+Word embeddings and pre-trained language models allow to build rich representations of text and have enabled improvements across most NLP tasks. The most successful models include word embeddings like FastText \cite{fasttext1_bojanowski2017enriching}, and, more recently, pre-trained language models which can be used to produce contextual embeddings or directly fine-tuned for each task. Good examples of the later are character-based models like Flair \cite{akbik2018coling} and masked language models like BERT \cite{devlin2019bert}. In many cases the teams that developed the algorithms also release their models, which facilitates both reproducibility and their application in downstream tasks. Given that the models are expensive to train, many companies and research groups tend to use those models, rather than building their own. This could be suboptimal as, for many languages, the models have been trained on easily obtained public corpora, which tends to be smaller and/or of lower quality that other existing corpora. In addition, pre-trained language models for non-English languages are not always available. In that case, only multilingual versions are available, where each language shares the quota of substrings and parameters with the rest of the languages, leading to a decrease in performance \cite{devlin2019bert}.  The chances for smaller languages, as for instance Basque, seem even direr, as easily available public corpora is very limited, and the quota of substrings depends on corpus size.
 
 As an illustration of the issues mentioned above, the multilingual BERT which Basque shares with other 103 languages is based on Wikipedia corpora, where English amounts to 2.5 thousand million tokens whereas for Basque it contains around 35 million tokens. Our corpus uses, in addition to the Basque Wikipedia, corpora crawled from news outlets (191M tokens). Another important issue is subword tokenization. Thus, for some common Basque words such as \texttt{etxerantz} (to the house) or \texttt{medikuarenera} (to the doctor), the subword tokenization generated by the monolingual BERT we trained will substantially differ from the output produced by the multilingual BERT:
 
@@ -68,9 +69,9 @@ As an illustration of the issues mentioned above, the multilingual BERT which Ba
 More specifically, mBERT's subwords tend to be shorter and less interpretable, while our subwords are closer to linguistically interpretable strings, like \texttt{mediku} (doctor) \texttt{aren} ('s) and \texttt{era} (to the).
 
 Furthermore, most of the time the released models have been thoroughly tested only in English. Alternatively, multilingual versions have been tested in transfer learning scenarios for other languages, where they have not been compared to monolingual versions \cite{devlin2019bert}.
-The goal of this paper is to compare publicly available models for Basque with analogous models which have been trained with a larger, better quality corpus. This has been possible for the Fastext and Flair models. In the case of BERT, only the multilingual version for 104 languages is available for Basque. We focus on four downstream NLP tasks, namely, topic classification, sentiment classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER).
+The goal of this paper is to compare publicly available models for Basque with analogous models which have been trained with a larger, better quality corpus. This has been possible for the FastText and Flair models. In the case of BERT, only the multilingual version for 104 languages is available for Basque. We focus on four downstream NLP tasks, namely, topic classification, sentiment classification, Part-of-Speech (POS) tagging and Named Entity Recognition (NER).
 
-The main contribution of our work is threefold: (1) We show that, in the case of Basque, publicly available models can be outperformed by analogous models trained with appropriate corpora. (2) We improve the state of the art in four tasks for Basque. (3) We make our models publicly available\footnote{URL to be included upon acceptance}. Our results show that this is indeed the case for Fastext and Flair models. In the case of BERT, we show that the monolingual Basque BERT outperforms the official multilingual BERT by a large margin, with up to 10 absolute point improvement. The increases are consistent for the three models in all four tasks. Our experiments have been performed training models which are analogous to the corresponding existing pre-trained models. This allows to make a head-to-head comparison, and to conclude that the training corpus is key. In the case of BERT, training a monolingual model instead of a multilingual one shared with 103 other languages is also a key factor, so we can rule out that it is not any change in the models that cause the better performance.
+The main contribution of our work is threefold: (1) We show that, in the case of Basque, publicly available models can be outperformed by analogous models trained with appropriate corpora. (2) We improve the state of the art in four tasks for Basque. (3) We make our models publicly available\footnote{\scriptsize \url{http://ixa2.si.ehu.es/text-representation-models/basque}}. Our results show that this is indeed the case for FastText and Flair models. In the case of BERT, we show that the monolingual Basque BERT outperforms the official multilingual BERT by a large margin, with up to 10 absolute point improvement. The increases are consistent for the three models in all four tasks. Our experiments have been performed training models which are analogous to the corresponding existing pre-trained models. This allows to make a head-to-head comparison, and to conclude that the training corpus is key. In the case of BERT, training a monolingual model instead of a multilingual one shared with 103 other languages is also a key factor, so we can rule out that it is not any change in the models that cause the better performance.
 
 Although our results set a new state of the art for the four tasks, our goal was not to train and use the systems in the most optimal manner. Instead, and as mentioned before, we have focused on head-to-head comparisons. In this sense, better results could be expected using variations of pre-trained models that have reported better results for English \cite{liu2019roberta}, or making an effort in developing better adaptations to each of the tasks.
 
@@ -81,29 +82,45 @@ Although our results set a new state of the art for the four tasks, our goal was
 % embedding / bert / mbert
 %\todo[inline]{related work aitor hasi. camembert aipatu? enekok uste du baietz}
 
-Deep learning methods in NLP rely on the ability to represent words as continuous vectors on a low dimensional space, called word embeddings. Word2vec~\cite{mikolov2013distributed} or GloVe~\cite{Pennington14glove:global} are among the best models that build word embeddings by analyzing co-occurrence patterns extracted from large corpora. FastText~\cite{fasttext1_bojanowski2017enriching} proposes an improvement over those models, consisting on embedding subword units, thereby attempting to introduce morphological information. Rich morphology languages such as Basque should especially profit from such word representations. FastText distributes embeddings for more than 150 languages trained on Common Crawl and  Wikipedia. In this paper we build FasText embeddings using a carefully collected corpus in Basque and show that it performs better than the officially distributed embeddings in all NLP we tested, which stresses the importance of a following a carefully designed method when building and collecting the corpus.
+Deep learning methods in NLP rely on the ability to represent words as continuous vectors on a low dimensional space, called word embeddings. Word2vec~\cite{mikolov2013distributed} or GloVe~\cite{Pennington14glove:global} are among the best models that build word embeddings by analyzing co-occurrence patterns extracted from large corpora. FastText~\cite{fasttext1_bojanowski2017enriching} proposes an improvement over those models, consisting on embedding subword units, thereby attempting to introduce morphological information. Rich morphology languages such as Basque should especially profit from such word representations. FastText distributes embeddings for more than 150 languages trained on Common Crawl and  Wikipedia. In this paper we build FastText embeddings using a carefully collected corpus in Basque and show that it performs better than the officially distributed embeddings in all NLP we tested, which stresses the importance of a following a carefully designed method when building and collecting the corpus.
 
 The aforementioned methods generate static word embeddings, that is, they provide a unique vector-based representation for a given word independently of the context in which the word occurs. Thus, if we consider the Basque word \emph{banku}\footnote{In English: bank.}, static word embedding approaches will calculate one vector irrespective of the fact that the same word \emph{banku} may convey different senses when used in different contexts, namely, ``financial institution'',``bench'', ``supply or stock'', among others. In order to address this problem, contextual word embeddings are proposed; the idea is to be able to generate different word representations according to the context in which the word appears. Examples of such contextual representations are ELMO \cite{Peters:2018} and Flair \cite{akbik2018coling}, which are built upon LSTM-based architectures and trained as language models. More recently, \newcite{devlin2019bert} introduced BERT, a model based on the transformer architecture trained as a masked language model, which has obtained very good results on a variety of NLP tasks. The multilingual counterpart of BERT, called mBERT, is a single language model pre-trained from corpora in more than 100 languages. mBERT enables to perform transfer knowledge techniques among languages, so that systems can be trained on datasets in languages different to the one used to fine tune them~\cite{heinzerling-strube-2019-sequence,DBLP:conf/acl/PiresSG19}.
 
 When pre-training mBERT the corpora sizes in different languages are very diverse, with English corpora being order of magnitudes larger than that of the minority languages. The authors alleviate this issue by oversampling examples of lower resource languages. However, as the parameters and vocabulary is shared across the languages, this means that each language has to share the quota of substrings and parameters with the rest of the languages. As shown in the introduction, this causes tokenization problems for low resource languages.
 
-CamemBERT~\cite{martin2019camembert} is a recent effort to build custom RoBERTa \cite{liu2019roberta} pre-trained language models for French, using 138GB of text from a monolingual French corpus extracted from Common Crawl. The authors show that CamemBERT obtains significant improvements on many French tasks compared to the publicly available multilingual BERT. However, the architecture used in CamemBERT is different to BERT, which makes the comparison among the models less straightforward. In contrast, we try to mimic the BERT architecture and parameters when building our models, thus allowing a head-to-head comparison among them. In addition we also report results for Fastext and Flair models. 
+CamemBERT~\cite{martin2019camembert} is a recent effort to build custom RoBERTa \cite{liu2019roberta} pre-trained language models for French, using 138GB of text from a monolingual French corpus extracted from Common Crawl. The authors show that CamemBERT obtains significant improvements on many French tasks compared to the publicly available multilingual BERT. However, the architecture used in CamemBERT is different to BERT, which makes the comparison among the models less straightforward. In contrast, we try to mimic the BERT architecture and parameters when building our models, thus allowing a head-to-head comparison among them. In addition we also report results for FastText and Flair models. 
 
 \section{Building Basque models}\label{sec:build-basq-models}
 
 % - Collecting corpora: iñaki
 %\subsection{Collecting Corpora}\label{sec:build-basq-models:corpora}
 
-In order to train accurately word embeddings and language models we need a corpus as large as possible, but also meeting certain criteria. Those criteria included clean and correctly structured text (having paragraph and document limits, specially relevant for training BERT language models). With that aim, we collected a corpus in Basque comprising news articles from online newspapers and the Basque Wikipedia\footnote{The dump from 2019/10/01 was used.}. In total the collected corpus contains 226 million tokens, of which 35 million come from the Wikipedia. Henceforth, we will refer to this corpus as Basque Media Corpus (BMC).
+In order to train accurately word embeddings and language models we need a corpus as large as possible, but also meeting certain criteria. Those criteria included clean and correctly structured text (having paragraph and document limits, specially relevant for training BERT language models). With that aim, we collected a corpus in Basque comprising crawled news articles from online newspapers and the Basque Wikipedia\footnote{The dump from 2019/10/01 was used.}. In total the collected corpus contains 224.6 million tokens, of which 35 million come from the Wikipedia. Table \ref{tab:corpus} shows the composition of the corpus. Henceforth, we will refer to this corpus as Basque Media Corpus (BMC).
 
+\begin{table}[!ht]\small
+\centering
+\begin{tabular}{@{\hspace{0.3cm}}lcc} \hline
+%\textbf{} & \multicolumn{4}{c}{\textbf{Task}} \\ %\hline
+ {\textbf{}} & {\textbf{Text type}} & {\textbf{Million tokens}}  \\ \hline
+Wikipedia & enciclopedia & 35M \\
+Berria newspaper & news & 81M  \\
+EiTB & news & 28M \\
+Argia magazine & news & 16M \\
+Local news sites & news &  64.6M \\ \hline
+\hline
+\textbf{BMC} & & 224.6M\\
+\hline
+\end{tabular}
+\caption{Basque topic classification results on Argia corpus.}\label{tab:corpus}
+\end{table}
 % \todo[inline]{Egia da common crawl zaratatsua dela?}
 
 %\todo[inline]{BMC modeloak (FastText, Flair eta BERT) bai jarriko ditugu publiko ezta??}
 
-% - fastext iñaki/xabier
+% - FastText iñaki/xabier
 \subsection{Static Embeddings: FastText}\label{sec:build-basq-models:static}
 
-To the best of our knowledge, the only publicly available static word embeddings for Basque are those distributed by Facebook and learned using an approach based on the skipgram model, where  each  word  is  represented as a bag of character n-grams \cite{fasttext1_bojanowski2017enriching}. The approach is implemented in the FastText library\footnote{\url{https://fasttext.cc/}}, and two types of pre-trained word vectors are available (based on 300 dimensions):
+To the best of our knowledge, the only publicly available static word embeddings for Basque are those distributed by Facebook and learned using an approach based on the skipgram model, where  each  word  is  represented as a bag of character n-grams \cite{fasttext1_bojanowski2017enriching}. The approach is implemented in the FastText library\footnote{\scriptsize \url{https://fasttext.cc/}}, and two types of pre-trained word vectors are available (based on 300 dimensions):
 
 \textbf{Wiki word vectors} (FastText-official-wikipedia) were trained on Wikipedia using the skip-gram model described in \cite{fasttext1_bojanowski2017enriching} with default parameters (a window size of 5, 3-6 length character n-grams and 5 negatives).
 
@@ -194,7 +211,7 @@ Every reported result for every system is the average of five randomly initializ
 % - Topic classification xabier
 \subsection{Topic classification}\label{sec:topic}
 
-For the task of topic classification a dataset containing 12k news headlines (brief article descriptions) was compiled from the Basque weekly newspaper Argia\footnote{\url{https://www.argia.eus}}. News are classified uniquely according to twelve thematic categories. The dataset was divided into train (70\%), development (15\%) and test datasets (15\%). The Basque Headlines Topic Classification (BHTC) dataset is publicly available under cc license\footnote{\url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/BHTC.tgz}} 
+For the task of topic classification a dataset containing 12k news headlines (brief article descriptions) was compiled from the Basque weekly newspaper Argia\footnote{\scriptsize \url{https://www.argia.eus}}. News are classified uniquely according to twelve thematic categories. The dataset was divided into train (70\%), development (15\%) and test datasets (15\%). The Basque Headlines Topic Classification (BHTC) dataset is publicly available under cc license\footnote{\scriptsize \url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/BHTC.tgz}} 
 
 The FastText and Flair related experiments were conducted using the Flair text classifier with the same hyperparameter setting\footnote{max-epoch 50, learning rate 0.1, minibatch size 64, and  patience 3 }. BERT-BMC and mBERT fine-tuning was performed over 3 epochs with a learning rate of 2e-5 and a batch size of 16.
 
@@ -276,8 +293,8 @@ FastText-BMC  & 96.14 \\ \hline
 Flair-official & 97.50 \\
 Flair-BMC  &  97.58 \\ \hline
 \textbf{BERT Language Models}\\
-mBERT-official &  96.26 \\
-BERT-BMC & \textbf{97.68} \\ \hline
+mBERT-official &  96.26/96.37 \\
+BERT-BMC & \textbf{97.68}/97.76 \\ \hline
 \textbf{Baseline} \\
 \cite{heinzerling-strube-2019-sequence} & 96.10 \\ \hline
 \end{tabular}
@@ -289,7 +306,7 @@ Table \ref{tab:pos} shows the results obtained by the different models. Firstly,
 \subsection{Named Entity Recognition}\label{sec:named-entity-recogn}
 
 EIEC\footnote{\scriptsize{\url{http://ixa2.si.ehu.eus/eiec/eiec_v1.0.tgz}}} is a gold standard corpus for NER in Basque \cite{alegria2006lessons}. The corpus contains 44K tokens for training (3817 unique entities) and 15K for testing (931 entities). Although EIEC is annotated with four entity types (Location, Person, Organization and Miscellaneous), the \emph{Miscellaneous} class is rather sparse, occurring only in a proportion of 1 to 10 with respect to the other three classes. Thus, in the training data there are 156 entities annotated as \emph{Miscellaneous} whereas for each of the other three classes it contains around 1200 entities.
-
+\todo[inline]{/ eta gero gehitutakoak (PoS eta NERen) hugginface-n zuzenean lortzen direnak dira (seed gabe 5 random run eginez). Hauek utziko ditugu?}
 \begin{table}[!ht]\footnotesize
 \centering
 \begin{tabular}{@{\hspace{0.3cm}}lccc} \hline
@@ -303,8 +320,8 @@ FastText-BMC  & 74.12 & 67.33 & 70.56 \\
 Flair-official & 81.86 & 79.89 & 80.82 \\
 Flair-BMC & 84.32 & 82.66 & 83.48 \\ \hline
 \textbf{BERT Language Models} \\
-mBERT-official  & 78.77 & 80.10 & 79.43 \\
-BERT-BMC  & 88.11 & 87.11& \textbf{87.61} \\ \hline
+mBERT-official  & 78.77/81.24 & 80.10/81.80 & 79.43/81.52 \\
+BERT-BMC  & 88.11/87.95 & 87.11/86.11 & \textbf{87.61}/87.06 \\ \hline
 \textbf{Baseline} \\
 \cite{agerri2016robust} & 80.66 & 73.14 & 76.72 \\ \hline
 \end{tabular}
@@ -334,7 +351,23 @@ BERT-BMC  & \textbf{76.77} & \textbf{78.10} & \textbf{97.68} & \textbf{87.61} \\
 
 As for previous tasks above, we compare our BMC-trained models (FastText, Flair and BERT) with respect to the official releases. We also compare with the previous published baseline on this dataset, which trains a Perceptron model with a simple and shallow feature set combined with clustering features based on unigram matching \cite{agerri2016robust}.
 
-Table \ref{tab:ner} reports the results of our comparison for NER using the usual conlleval script from the CoNLL NER shared tasks \footnote{\scriptsize{\url{https://www.clips.uantwerpen.be/conll2002/ner/}}}. We can see that the BMC-trained models improve over the official models distributed by FasText, Flair and mBERT, with a much larger margin than for POS tagging. It is also worth mentioning that there is a nice balance between the precision and the recall obtained by both Flair-BMC and BERT-BMC. Finally, we think that the larger differences in performance between NER and POS tagging might be partially due to the small size of the EIEC NER corpus. In any case, more experimentation is required to clarify the issue.
+Table \ref{tab:ner} reports the results of our comparison for NER using the usual conlleval script from the CoNLL NER shared tasks \footnote{\scriptsize{\url{https://www.clips.uantwerpen.be/conll2002/ner/}}}. We can see that the BMC-trained models improve over the official models distributed by FastText, Flair and mBERT, with a much larger margin than for POS tagging. It is also worth mentioning that there is a nice balance between the precision and the recall obtained by both Flair-BMC and BERT-BMC. Finally, we think that the larger differences in performance between NER and POS tagging might be partially due to the small size of the EIEC NER corpus. In any case, more experimentation is required to clarify the issue. Table \ref{tab:ner-examples} shows an example comparing mBERT and BERTeus outputs in the EIEC dataset. This example reflects the case in which the mBERT model fails to disambiguate metonymy correctly. 
+
+\todo[inline]{Ez dakit formatu egokiena den adibidea gehitzeko. }
+
+\begin{table*}[!t]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lllllllllllllll}
+      & Chechenya &  &   &  &  &  & United & States &  & Western & Europe &  &  &  \\
+      & Txetxeniako & gai & horretan & agerian & geratu & da & Estatu & Batuek & eta & Mendebaldeko & Europak & eman & dioten & sustengua. \\
+\textbf{GS: }      & B-LOC & O & O & O & O & O & \textbf{B-ORG} & \textbf{I-ORG} & O & \textbf{B-ORG} & \textbf{I-ORG }& O & O & O. \\
+\textbf{mBERT} & B-LOC & O & O & O & O & O & \textbf{B-LOC} & \textbf{I-LOC} & O & \textbf{B-LOC} & \textbf{I-LOC} & O & O & O. \\
+\textbf{BERTeus} & B-LOC & O & O & O & O & O & \textbf{B-ORG} & \textbf{I-ORG} & O & \textbf{B-ORG} & \textbf{I-ORG} & O & O & O. \\
+\end{tabular}}
+\caption{An example from the EIEC corpus where the mBERT model misses to disambiguate the cases of metonymy. The translation of the sentence is the following: \textit{On that issue about Chechenya the support given by the United States and Western Europe has been visible.}}
+\label{tab:ner-examples}
+\end{table*}
 
 %\todo[inline]{Basque ELMOk F1 82.02 lortzen du hemen merezi du gehitzea (CramemBERTen azaltzen da)?? https://github.com/stefan-it/plur}
 %\todo[inline]{Rodri: Ez dut uste jarri behar dugunik. Ez dago argitalpenik eta ez dakigu nola egin zituen entrenamenduak: parametroak, dev for training, etab. Adibidez bere mBERT emaitzak gureak baina baxuagoak dira. Gainera, flair-ekin entrenatu eta ebaluatu baditu modeloak, posible da F1 scores gaizki egotea, Flair-ek ez baitu ematen conll-en F1 score-a.}
@@ -366,10 +399,10 @@ In order to facilitate reproducibility all benchmarks and models used in this wo
 
 
 % Ondorio nagusiak:
-% Euskararako bert propioa > mbert publikoa eta euskararako fastext propioa > fastext publikoa eta flair propioa > flair publikoa
+% Euskararako bert propioa > mbert publikoa eta euskararako FastText propioa > FastText publikoa eta flair propioa > flair publikoa
 % Atazak: topic class / polarity / ner / pos
 % Artearen egoera ataza guztietan (konprobatu bakoitzak berea)
-% Euskaraz: bert > flair > fastext (ñabardurekin idatzi)
+% Euskaraz: bert > flair > FastText (ñabardurekin idatzi)
 % Embedding-ak eta ereduak banatuko ditugu
 % Honek ñabardura gehitzen dio alemanari (japonesa?) buruzko lanari (jon ander) \\ \newline \Keywords{keyword1, keyword2, keyword3}
 
