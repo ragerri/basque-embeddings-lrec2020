@@ -242,7 +242,7 @@ Table \ref{tab:topic} shows the results obtained by the different models. Firstl
 % - Polarity iñaki
 \subsection{Sentiment Classification}\label{sec:polarity}
 
-Sentiment classification is evaluated using a corpus of tweets containing messages related to the cultural domain\footnote{Dataset is available at \scriptsize{\url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}}. The corpus contains annotations for three classes (positive, negative and neutral), and a total of 2,936 examples. For the experiments in this paper the corpus was divided into train (80\%), test (10\%) and development (10\%) sets. Class distribution corresponds to 32\% positive, 54\% neutral and 14\% negative.
+Sentiment classification is evaluated using a corpus of tweets containing messages related to the cultural domain\footnote{\scriptsize{\url{https://hizkuntzateknologiak.elhuyar.eus}}}. The corpus contains annotations for three classes (positive, negative and neutral), and a total of 2,936 examples. For the experiments in this paper the corpus was divided into train (80\%), test (10\%) and development (10\%) sets. Class distribution corresponds to 32\% positive, 54\% neutral and 14\% negative.
 
 For FastText and Flair experiments we used the Flair text classifier with the same hyperparameter settings as those used for Topic Detection in Section \ref{sec:topic}. This is also the case for BERTeus and mBERT: fine-tuning over 3 epochs with a learning rate of 2e-5 and a batch size of 16.
 
