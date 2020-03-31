@@ -204,10 +204,10 @@ To train the Flair system we use the parameters specified in \cite{akbik2019naac
 
 For comparison between BERT models we fine-tune on the training data provided for each of the four tasks with both the official multilingual BERT \cite{devlin2019bert} model and with our BERTeus model (trained as described in Section \ref{sec:build-basq-models:bert}).
 
-Every reported result for every system is the average of five randomly initialized runs. The POS and NER experiments using mBERT and BERTeus are performed using the transformers library \newcite{Wolf2019HuggingFacesTS} where it is recommended to remove the seed for random initialization.
+Every reported result for every system is the average of five randomly initialized runs. The POS and NER experiments using mBERT and BERTeus are performed using the transformers library \cite{Wolf2019HuggingFacesTS} where it is recommended to remove the seed for random initialization.
 
 % - Topic classification xabier
-\subsection{Topic classification}\label{sec:topic}
+\subsection{Topic Classification}\label{sec:topic}
 
 For the task of topic classification a dataset containing 12k news headlines (brief article descriptions) was compiled from the Basque weekly newspaper Argia\footnote{\scriptsize \url{https://www.argia.eus}}. News are classified uniquely according to twelve thematic categories. The dataset was divided into train (70\%), development (15\%) and test datasets (15\%). The Basque Headlines Topic Classification (BHTC) dataset is publicly available under CC license.\footnote{\scriptsize \url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/BHTC.tgz}}
 
@@ -240,7 +240,7 @@ TF-IDF Logistic Regression & 63.00 & 49.00 \\
 Table \ref{tab:topic} shows the results obtained by the different models. Firstly, it can be seen that every BMC-trained model outperforms its official counterpart for all the three settings, by at least 4\% in all cases, for both micro and macro F1-scores. The best results are obtained by BERTeus. For each type of embedding or language models, the results show the effectiveness of developing your own models for your own language.
 
 % - Polarity iñaki
-\subsection{Sentiment classification}\label{sec:polarity}
+\subsection{Sentiment Classification}\label{sec:polarity}
 
 Sentiment classification is evaluated using a corpus of tweets containing messages related to the cultural domain\footnote{Dataset is available at \scriptsize{\url{https://hizkuntzateknologiak.elhuyar.eus/assets/files/behaguneadss2016-dataset.tgz}}}. The corpus contains annotations for three classes (positive, negative and neutral), and a total of 2,936 examples. For the experiments in this paper the corpus was divided into train (80\%), test (10\%) and development (10\%) sets. Class distribution corresponds to 32\% positive, 54\% neutral and 14\% negative.
 
@@ -406,7 +406,7 @@ This work has been partially funded by the Basque Government (IXA excellence res
 
 \vspace{0.5cm}
 
-\noindent \textbf{Author Contributions:} The first four authors (marked with $*$) contributed equally to this work.
+\noindent \textbf{Author Contributions:} The first four authors (marked with $^{*}$) contributed equally to this work.
 
 \section{Bibliographical References}
 
